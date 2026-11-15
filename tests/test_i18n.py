@@ -152,7 +152,8 @@ class BilingualMarkupTest(unittest.TestCase):
         build()
 
     def test_every_bilingual_node_pairs_zh_with_en(self):
-        for path in (BYTE_PAGE, INDEX_PAGE):
+        # 遍历 dist/ 下所有页面：新增页面自动纳入，不用回来补测试。
+        for path in sorted(DIST.rglob("*.html")):
             html = path.read_text(encoding="utf-8")
             nodes = bilingual_nodes(html)
             self.assertTrue(nodes, "%s: 没有找到任何双语节点" % (path.name,))
@@ -168,7 +169,7 @@ class BilingualMarkupTest(unittest.TestCase):
 
     def test_no_visible_copy_escapes_the_pairing(self):
         """页面上不该有「只此一版」的可见文案：双语节点之外不许有裸文本。"""
-        for path in (BYTE_PAGE, INDEX_PAGE):
+        for path in sorted(DIST.rglob("*.html")):
             leftovers = bare_text(path.read_text(encoding="utf-8"))
             self.assertEqual(
                 leftovers, [],

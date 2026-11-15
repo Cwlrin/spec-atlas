@@ -372,16 +372,21 @@ def render_home(template, entries, blocks, switch_template, notice):
 
 
 def render_home_blocks(copy, blocks):
-    """已收录的块：一个块一行，链接到它自己的索引页。"""
+    """已收录的块：一个块一行，链接到它自己的索引页。
+
+    字节数取自 document["size"]，不写进文案：数据变了文案不该跟着错。
+    """
     items = []
     for spec, revision, block, document in blocks:
-        count = sum(byte.get("length", 1) for byte in document["bytes"])
         key = "home.block.%s" % (block,)
         blurb = copy.pair(key) if key in copy.entries else copy.pair("home.block.other")
+        size = Copy(copy.entries, dict(copy.values, size=document["size"])).pair(
+            "home.block.size"
+        )
         items.append(
             '<li><a href="%s/%s/%s/index.html"><code>%s</code> '
             '<span class="block-go">%s</span></a>'
-            '<span class="block-meta">%s</span></li>'
+            '<span class="block-meta">%s · %s</span></li>'
             % (
                 html.escape(spec),
                 html.escape(revision),
@@ -389,9 +394,11 @@ def render_home_blocks(copy, blocks):
                 block_label(block),
                 bilingual(*copy.pair("home.open")),
                 bilingual(*blurb),
+                bilingual(*size),
             )
         )
     return "\n    ".join(items)
+
 
 
 def build(data_dir, dist_dir, site_dir, schema_dir):

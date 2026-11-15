@@ -32,12 +32,12 @@
     "en": "Two bus addresses"
   },
   "home.block.a0": {
-    "zh": "身份与静态参数，256 字节",
-    "en": "Identity and static parameters, 256 bytes"
+    "zh": "身份与静态参数",
+    "en": "Identity and static parameters"
   },
   "home.block.a2": {
-    "zh": "诊断、阈值与校准，256 字节",
-    "en": "Diagnostics, thresholds and calibration, 256 bytes"
+    "zh": "诊断、阈值与校准",
+    "en": "Diagnostics, thresholds and calibration"
   },
   "home.block.other": {
     "zh": "寄存器块",
@@ -154,5 +154,9 @@
   "notice.text": {
     "zh": "本站是非官方文档站，内容版权归 SNIA 所有；中文译文仅供参考，如有出入以英文原文为准。",
     "en": "This is an unofficial site. Content is copyright SNIA; Chinese translations are for reference only, and the English original prevails."
+  },
+  "home.block.size": {
+    "zh": "{size} 字节",
+    "en": "{size} bytes"
   }
 }
