@@ -1,5 +1,6 @@
 #!/bin/sh
 # Conventional Commits 校验：<type>(<scope>): <subject>
+# 标题支持中文；长度按字节控制（中文约 40 字以内，英文约 72 字符以内）
 msg_file="$1"
 first=$(head -n 1 "$msg_file")
 
@@ -7,12 +8,19 @@ case "$first" in
   "Merge "*|"Revert "*|"fixup! "*|"squash! "*) exit 0 ;;
 esac
 
-if printf '%s' "$first" | grep -Eq '^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\([a-z0-9._-]+\))?!?: .{3,72}$'; then
-  exit 0
+if ! printf '%s' "$first" | grep -Eq '^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\([a-z0-9._-]+\))?!?: .+$'; then
+  echo "提交信息不符合约定式提交：" >&2
+  echo "  期望：<type>(<scope>): <subject>" >&2
+  echo "  type：feat fix docs style refactor perf test build ci chore revert" >&2
+  echo "  例：feat(data): 补齐 A0h 寄存器映射" >&2
+  exit 1
 fi
 
-echo "提交信息不符合约定式提交：" >&2
-echo "  期望：<type>(<scope>): <subject>" >&2
-echo "  type：feat fix docs style refactor perf test build ci chore revert" >&2
-echo "  例：feat(data): add full A0h register map" >&2
-exit 1
+subj=$(printf '%s' "$first" | sed -E 's/^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\([a-z0-9._-]+\))?!?: //')
+n=$(printf '%s' "$subj" | wc -c | tr -d ' ')
+
+if [ "$n" -lt 3 ] || [ "$n" -gt 120 ]; then
+  echo "标题长度不合适：当前 " "$n" "字节（中文约 40 字、英文约 72 字符以内）" >&2
+  exit 1
+fi
+exit 0

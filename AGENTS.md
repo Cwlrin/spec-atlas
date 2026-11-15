@@ -35,6 +35,7 @@
 scope 取目录名：`specs` `data` `schema` `tools` `site` `docs` `repo`。
 
 规则：
-- subject 用祈使句、小写开头、不加句号、72 字符内
+- subject 用祈使句、不加句号；**中文可用**（≤ 40 字），英文小写开头（≤ 72 字符）
 - 破坏性变更写 `type(scope)!: ...`，正文加 `BREAKING CHANGE:`
 - 正文解释「为什么」，不复述「改了什么」
+- 示例：`feat(data): 补齐 A0h 寄存器映射`、`fix(site): 表格浮层在窄屏溢出`

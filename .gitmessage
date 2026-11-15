@@ -2,7 +2,7 @@
 #
 # type: feat fix docs style refactor perf test build ci chore revert
 # scope: specs data schema tools site docs repo
-# subject: 祈使句，小写开头，不加句号，<= 72 字符
+# subject: 中文可用，祈使句，不加句号；中文 <= 40 字，英文 <= 72 字符
 #
 # 正文说明「为什么」，不要复述「改了什么」。
 #
