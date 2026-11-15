@@ -76,7 +76,7 @@ py -3 -m unittest discover -s tests   # 产物测试
 面包屑能点回首页。全站 footer 带中英双语免责声明（非官方 / 版权归 SNIA / 译文仅供参考），
 `tests/` 里遍历 `dist/**/*.html` 断言，新增页面自动纳入。首次访问提示条随 HTML 下发、
 默认 `hidden`，由 `site/notice.js` 揭开；关掉后记 `localStorage["spec-atlas.notice"]`，
-回访不再出现（禁写 localStorage 时当次仍能关）。
+回访不再出现；禁写 localStorage 时当次仍能关，连读都抛（禁 cookie/沙箱）时首次访问照样看得到。
 
 **暂定**：皮肤归 #10，仍是临时形态。
 

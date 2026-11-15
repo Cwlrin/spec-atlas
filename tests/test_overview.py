@@ -97,6 +97,21 @@ class OverviewPageTest(unittest.TestCase):
                 "首页链到了不存在的东西：%s" % (link,),
             )
 
+    def test_block_size_comes_from_the_data(self):
+        """首页说的字节数必须是数据里的 size：文案不该另有一份会错的数字。"""
+        import json
+
+        document = json.loads(
+            next((DIST.parent / "data" / "sff-8472").rglob("a0.json")).read_text(
+                encoding="utf-8"
+            )
+        )
+        self.assertIn(
+            "%d 字节" % (document["size"],),
+            self.html,
+            "首页的字节数不是从数据渲染的",
+        )
+
     def test_carries_the_disclaimer(self):
         self.assertIn("非官方", self.html)
         self.assertIn("SNIA", self.html)
