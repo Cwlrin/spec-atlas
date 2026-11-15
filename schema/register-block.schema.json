@@ -1,43 +1,219 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://spec-atlas.local/schema/register-block.schema.json",
-  "title": "寄存器块数据（revision -> block -> byte）",
+  "$id": "register-block.schema.json",
+  "title": "寄存器块：一个地址块在某个修订版下的字段定义",
   "type": "object",
-  "required": ["spec", "revision", "block", "size", "bytes"],
+  "required": [
+    "spec",
+    "revision",
+    "block",
+    "size",
+    "bytes"
+  ],
   "additionalProperties": false,
   "properties": {
-    "spec": { "type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$" },
-    "revision": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+$" },
-    "block": { "type": "string", "enum": ["a0", "a2"] },
-    "size": { "type": "integer", "minimum": 1, "maximum": 256 },
-    "handEdited": { "type": "boolean" },
-    "handEditNote": { "type": "string", "minLength": 1 },
+    "spec": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+    },
+    "revision": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+$"
+    },
+    "block": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9]*$"
+    },
+    "size": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 256
+    },
+    "note": {
+      "$ref": "#/definitions/i18n"
+    },
+    "handEdited": {
+      "type": "boolean"
+    },
+    "handEditNote": {
+      "type": "string",
+      "minLength": 1
+    },
+    "sections": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/definitions/section"
+      }
+    },
+    "checksums": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/checksum"
+      }
+    },
     "bytes": {
       "type": "array",
       "minItems": 1,
-      "items": { "$ref": "#/definitions/byte" }
+      "items": {
+        "$ref": "#/definitions/byte"
+      }
     }
   },
   "definitions": {
     "i18n": {
       "type": "object",
-      "required": ["zh", "en"],
+      "required": [
+        "zh",
+        "en"
+      ],
       "additionalProperties": false,
       "properties": {
-        "zh": { "type": "string", "minLength": 1 },
-        "en": { "type": "string", "minLength": 1 }
+        "zh": {
+          "type": "string",
+          "minLength": 1
+        },
+        "en": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "section": {
+      "type": "object",
+      "required": [
+        "start",
+        "end",
+        "name"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "start": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "end": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "name": {
+          "$ref": "#/definitions/i18n"
+        }
+      }
+    },
+    "checksum": {
+      "type": "object",
+      "required": [
+        "id",
+        "start",
+        "end",
+        "target",
+        "algorithm",
+        "name"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+        },
+        "start": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "end": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "target": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "algorithm": {
+          "type": "string",
+          "enum": [
+            "sum-low8"
+          ]
+        },
+        "name": {
+          "$ref": "#/definitions/i18n"
+        }
+      }
+    },
+    "bit": {
+      "type": "object",
+      "required": [
+        "bit",
+        "name",
+        "description"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "bit": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 7
+        },
+        "reserved": {
+          "type": "boolean"
+        },
+        "name": {
+          "$ref": "#/definitions/i18n"
+        },
+        "description": {
+          "$ref": "#/definitions/i18n"
+        }
       }
     },
     "byte": {
       "type": "object",
-      "required": ["address", "name", "description"],
+      "required": [
+        "address",
+        "length",
+        "name",
+        "description"
+      ],
       "additionalProperties": false,
       "properties": {
-        "address": { "type": "integer", "minimum": 0, "maximum": 255 },
-        "length": { "type": "integer", "minimum": 1, "maximum": 8 },
-        "name": { "$ref": "#/definitions/i18n" },
-        "description": { "$ref": "#/definitions/i18n" },
-        "reserved": { "type": "boolean" }
+        "address": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "length": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "reserved": {
+          "type": "boolean"
+        },
+        "name": {
+          "$ref": "#/definitions/i18n"
+        },
+        "description": {
+          "$ref": "#/definitions/i18n"
+        },
+        "note": {
+          "$ref": "#/definitions/i18n"
+        },
+        "tableRefs": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "pattern": "^[0-9]+-[0-9]+$"
+          }
+        },
+        "bits": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/definitions/bit"
+          }
+        },
+        "checksumFor": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+        }
       }
     }
   }

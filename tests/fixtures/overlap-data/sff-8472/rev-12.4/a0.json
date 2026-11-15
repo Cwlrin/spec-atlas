@@ -1,0 +1,72 @@
+{
+  "spec": "sff-8472",
+  "revision": "12.4",
+  "block": "a0",
+  "size": 4,
+  "note": {
+    "zh": "测试固定数据。",
+    "en": "Test fixture."
+  },
+  "sections": [
+    {
+      "start": 0,
+      "end": 3,
+      "name": {
+        "zh": "整块（测试用）",
+        "en": "WHOLE BLOCK (FIXTURE)"
+      }
+    }
+  ],
+  "checksums": [
+    {
+      "id": "cc-base",
+      "start": 0,
+      "end": 3,
+      "target": 3,
+      "algorithm": "sum-low8",
+      "name": {
+        "zh": "CC_BASE",
+        "en": "CC_BASE"
+      }
+    }
+  ],
+  "bytes": [
+    {
+      "address": 0,
+      "length": 1,
+      "name": {
+        "zh": "标识符",
+        "en": "Identifier"
+      },
+      "description": {
+        "zh": "占位",
+        "en": "placeholder"
+      }
+    },
+    {
+      "address": 1,
+      "length": 2,
+      "name": {
+        "zh": "值",
+        "en": "Value"
+      },
+      "description": {
+        "zh": "占位",
+        "en": "placeholder"
+      }
+    },
+    {
+      "address": 3,
+      "length": 1,
+      "reserved": true,
+      "name": {
+        "zh": "保留",
+        "en": "Reserved"
+      },
+      "description": {
+        "zh": "占位",
+        "en": "placeholder"
+      }
+    }
+  ]
+}

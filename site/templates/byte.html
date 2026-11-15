@@ -15,7 +15,7 @@
 </header>
 <main class="page">
   <h1>{{bi:byte.title}}</h1>
-  <p class="address-line"><code>{{address_hex}}</code> · {{bi:byte.position}} · {{length}} {{bi:byte.length_unit}}</p>
+  <p class="address-line"><code>{{address_hex}}</code> · {{bi:byte.position}}</p>
   <dl class="field-meta">
     <dt>{{bi:label.address}}</dt>
     <dd><code>{{address_hex}}</code></dd>
@@ -25,7 +25,16 @@
     <dd>{{bi:name}}</dd>
     <dt>{{bi:label.description}}</dt>
     <dd>{{bi:description}}</dd>
+    <dt>{{bi:byte.section}}</dt>
+    <dd>{{section:raw}}</dd>
+    <dt>{{bi:byte.field_of}}</dt>
+    <dd>{{field:raw}}</dd>
   </dl>
+  {{offset:raw}}
+  {{reserved:raw}}
+  {{bits:raw}}
+  {{checksum:raw}}
+  {{tables:raw}}
 </main>
 <footer class="site-footer">
   <p>{{bi:footer.spec}}</p>

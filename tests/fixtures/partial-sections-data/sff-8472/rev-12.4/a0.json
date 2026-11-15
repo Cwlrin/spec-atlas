@@ -1,0 +1,47 @@
+{
+  "spec": "sff-8472",
+  "revision": "12.4",
+  "block": "a0",
+  "size": 4,
+  "note": {
+    "zh": "测试固定数据：分组只盖住前两个字节。",
+    "en": "Fixture: sections cover only the first two bytes."
+  },
+  "sections": [
+    {
+      "start": 0,
+      "end": 2,
+      "name": {
+        "zh": "前半",
+        "en": "First half"
+      }
+    }
+  ],
+  "checksums": [],
+  "bytes": [
+    {
+      "address": 0,
+      "length": 2,
+      "name": {
+        "zh": "字段甲",
+        "en": "Field A"
+      },
+      "description": {
+        "zh": "占位",
+        "en": "placeholder"
+      }
+    },
+    {
+      "address": 2,
+      "length": 2,
+      "name": {
+        "zh": "字段乙",
+        "en": "Field B"
+      },
+      "description": {
+        "zh": "占位",
+        "en": "placeholder"
+      }
+    }
+  ]
+}

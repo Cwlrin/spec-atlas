@@ -4,9 +4,13 @@
 支持的关键字见 SUPPORTED_KEYWORDS；schema 里出现未实现的关键字会直接报错，
 不允许「写了但静默不生效」。
 
-另有两层不在 schema 里的检查，因为它们跨字段或依赖目录布局：
+另有几层不在 schema 里的检查，因为它们跨字段或依赖目录布局：
 - location_errors：spec / revision / block 必须与所在目录名、文件名一致；
-- consistency_errors：地址不重复、覆盖范围不越界、handEdited 必须有 handEditNote。
+- coverage_errors：每个地址必须恰好被一条定义覆盖，保留区也要显式写出来；
+- checksum_errors：校验和规则必须与字节布局自洽（区间不越界、不覆盖自身、
+  目标字节确实声明了这条规则）；
+- table_errors：字段引用的表必须在该修订版的表登记里，登记的表也要有出处。
+每个问题都带上地址，构建失败时才能定位到具体字节。
 """
 
 from __future__ import annotations
@@ -21,6 +25,22 @@ ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_DATA = ROOT / "data"
 DEFAULT_SCHEMA = ROOT / "schema"
 REGISTER_SCHEMA = "register-block.schema.json"
+TABLES_SCHEMA = "tables.schema.json"
+TABLES_FILE = "table-registry.json"
+
+# 文档种类只有一处定义：加新种类（例如表文件）时改这张表，不要在各处复制判断。
+DOCUMENT_SCHEMAS = {TABLES_FILE: TABLES_SCHEMA}
+DEFAULT_SCHEMA_FILE = REGISTER_SCHEMA
+
+
+def document_kind(path):
+    """文件在 <spec>/rev-<x.y>/ 下叫什么，就决定了它是什么文档。"""
+    return Path(path).name
+
+
+def is_registry(path):
+    """这个文件是不是表登记（与寄存器块共用一层目录）。"""
+    return document_kind(path) in DOCUMENT_SCHEMAS
 
 for stream in (sys.stdout, sys.stderr):
     if hasattr(stream, "reconfigure"):
@@ -170,13 +190,15 @@ def validate(instance, schema, root_schema=None, path="$"):
 
 
 def schema_for(data_file, data_dir, schema_dir):
-    """当前只有一种数据：<spec>/rev-<x.y>/<block>.json -> register-block。"""
+    """<spec>/rev-<x.y>/<block>.json -> register-block；同名目录下的 table-registry.json -> tables。"""
     parts = Path(data_file).relative_to(data_dir).parts
     if len(parts) != 3:
         raise ValueError(
-            "位置不对：期望 <spec>/rev-<x.y>/<block>.json，实际是 %s" % ("/".join(parts),)
+            "位置不对：期望 <spec>/rev-<x.y>/<文件名>.json，实际是 %s" % ("/".join(parts),)
         )
-    return Path(schema_dir) / REGISTER_SCHEMA
+    return Path(schema_dir) / DOCUMENT_SCHEMAS.get(
+        document_kind(data_file), DEFAULT_SCHEMA_FILE
+    )
 
 
 def location_errors(document, file_path, data_dir):
@@ -190,10 +212,231 @@ def location_errors(document, file_path, data_dir):
         errors.append(
             "revision 字段 %r 与目录名 %r 不一致" % (document.get("revision"), revision_dir)
         )
+    if is_registry(file_path):
+        return errors
     if document.get("block") != Path(filename).stem:
         errors.append(
             "block 字段 %r 与文件名 %r 不一致" % (document.get("block"), filename)
         )
+    return errors
+
+
+def _covered(document):
+    """展开成长度表：{地址: (条目下标, 条目内偏移)}。"""
+    covered = {}
+    overlaps = []
+    for index, byte in enumerate(document.get("bytes", [])):
+        if not isinstance(byte, dict):
+            continue
+        address = byte.get("address")
+        if not isinstance(address, int):
+            continue
+        for offset in range(byte.get("length", 1)):
+            key = address + offset
+            if key in covered:
+                overlaps.append((key, covered[key][0], index))
+            else:
+                covered[key] = (index, offset)
+    return covered, overlaps
+
+
+def _ranges(addresses):
+    """[1,2,3,6] -> '1-3, 6'，报错时比逐个列可读。"""
+    ordered = sorted(addresses)
+    spans = []
+    for address in ordered:
+        if spans and address == spans[-1][1] + 1:
+            spans[-1][1] = address
+        else:
+            spans.append([address, address])
+    return ", ".join(
+        "%d" % start if start == end else "%d-%d" % (start, end) for start, end in spans
+    )
+
+
+def coverage_errors(document):
+    """每个地址恰好一条定义：缺一条要报，重叠也要报。"""
+    errors = []
+    size = document.get("size", 0)
+    covered, overlaps = _covered(document)
+    for address, first, second in overlaps:
+        errors.append(
+            "地址 %d 被 bytes[%d] 与 bytes[%d] 重复覆盖" % (address, first, second)
+        )
+    missing = [address for address in range(size) if address not in covered]
+    if missing:
+        errors.append(
+            "地址 %s 没有任何定义（块大小 %d，缺 %d 个字节）"
+            % (_ranges(missing), size, len(missing))
+        )
+    beyond = sorted(address for address in covered if address >= size)
+    if beyond:
+        errors.append("地址 %s 超出块大小 %d" % (_ranges(beyond), size))
+
+    sections = document.get("sections", [])
+    for index, section in enumerate(sections):
+        start, end = section.get("start"), section.get("end")
+        if isinstance(start, int) and isinstance(end, int) and start > end:
+            errors.append("sections[%d]: 起点 %d 大于终点 %d" % (index, start, end))
+
+    # 分组要么不写（单块字段的简单数据），要么把 0..size-1 完整分掉且不重叠：
+    # 半截的分组会让字段页上的「所属分组」时有时无。
+    if sections:
+        spans = []
+        for index, section in enumerate(sections):
+            start, end = section.get("start"), section.get("end")
+            if not all(isinstance(value, int) for value in (start, end)):
+                continue
+            for other_start, other_end, other_index in spans:
+                if start <= other_end and other_start <= end:
+                    errors.append(
+                        "sections[%d] 的区间 %d-%d 与 sections[%d] 的 %d-%d 重叠"
+                        % (index, start, end, other_index, other_start, other_end)
+                    )
+            spans.append((start, end, index))
+        claimed = set()
+        for start, end, _index in spans:
+            claimed.update(range(start, end + 1))
+        unclaimed = [address for address in range(size) if address not in claimed]
+        if unclaimed:
+            errors.append(
+                "分组没有覆盖地址 %s（块大小 %d）" % (_ranges(unclaimed), size)
+            )
+    return errors
+
+
+def checksum_errors(document):
+    """校验和规则要和字节布局自洽，否则求和永远对不上。"""
+    errors = []
+    size = document.get("size", 0)
+    rules = document.get("checksums", [])
+    by_target = {}
+    for index, rule in enumerate(rules):
+        start, end, target = rule.get("start"), rule.get("end"), rule.get("target")
+        if not all(isinstance(value, int) for value in (start, end, target)):
+            continue
+        if start > end:
+            errors.append("checksums[%d]: 求和区间 %d-%d 起点大于终点" % (index, start, end))
+        if target >= size or end >= size:
+            errors.append(
+                "校验和 %r 越界：区间 %d-%d、目标字节 %d，块大小 %d"
+                % (rule.get("id"), start, end, target, size)
+            )
+        if start <= target <= end:
+            errors.append(
+                "校验和 %r 的求和区间 %d-%d 包含了目标字节 %d，求和自指"
+                % (rule.get("id"), start, end, target)
+            )
+        by_target[target] = rule.get("id")
+        for other in rules[:index]:
+            o_start, o_end = other.get("start"), other.get("end")
+            if not all(isinstance(value, int) for value in (o_start, o_end)):
+                continue
+            if start <= o_end and o_start <= end:
+                errors.append(
+                    "校验和 %r 的区间 %d-%d 与 %r 的区间 %d-%d 重叠"
+                    % (rule.get("id"), start, end, other.get("id"), o_start, o_end)
+                )
+
+    covered, _ = _covered(document)
+    for address in sorted(by_target):
+        if address not in covered:
+            errors.append("校验和目标字节 %d 没有对应的字节定义" % (address,))
+
+    for index, byte in enumerate(document.get("bytes", [])):
+        if not isinstance(byte, dict) or "checksumFor" not in byte:
+            continue
+        rule_id = byte["checksumFor"]
+        if rule_id not in [rule.get("id") for rule in rules]:
+            errors.append(
+                "bytes[%d]（地址 %r）声明 checksumFor %r，但没有这条校验和规则"
+                % (index, byte.get("address"), rule_id)
+            )
+            continue
+        rule = next(rule for rule in rules if rule.get("id") == rule_id)
+        if rule.get("target") != byte.get("address"):
+            errors.append(
+                "bytes[%d]（地址 %r）声明为校验和 %r 的目标，但规则指向字节 %r"
+                % (index, byte.get("address"), rule_id, rule.get("target"))
+            )
+    return errors
+
+
+def bit_errors(document):
+    """位域只在单字节字段上成立，且一位只能有一条解释。"""
+    errors = []
+    for index, byte in enumerate(document.get("bytes", [])):
+        if not isinstance(byte, dict) or "bits" not in byte:
+            continue
+        if byte.get("length", 1) != 1:
+            errors.append(
+                "bytes[%d]（地址 %r）长 %r 字节，不能写位域"
+                % (index, byte.get("address"), byte.get("length", 1))
+            )
+        seen = {}
+        for jndex, bit in enumerate(byte.get("bits", [])):
+            if not isinstance(bit, dict):
+                continue
+            number = bit.get("bit")
+            if number in seen:
+                errors.append(
+                    "地址 %r 的比特 %r 重复出现在 bits[%d] 与 bits[%d]"
+                    % (byte.get("address"), number, seen[number], jndex)
+                )
+            else:
+                seen[number] = jndex
+    return errors
+
+
+def table_errors(document, registry):
+    """字段引用的表必须在表登记里；登记的表也要真的出现在规范里。"""
+    errors = []
+    if registry is None:
+        for index, byte in enumerate(document.get("bytes", [])):
+            if isinstance(byte, dict) and byte.get("tableRefs"):
+                errors.append(
+                    "bytes[%d]（地址 %r）引用了表 %r，但本修订版没有 table-registry.json"
+                    % (index, byte.get("address"), byte["tableRefs"])
+                )
+        return errors
+    known = {table.get("number") for table in registry.get("tables", [])}
+    for index, byte in enumerate(document.get("bytes", [])):
+        if not isinstance(byte, dict):
+            continue
+        for number in byte.get("tableRefs", []):
+            if number not in known:
+                errors.append(
+                    "bytes[%d]（地址 %r）引用了表 %s，但表登记里没有这张表"
+                    % (index, byte.get("address"), number)
+                )
+    return errors
+
+
+def registry_errors(registry, block_names):
+    """表登记自身：表号唯一、generatedFrom 指向真的数据块。"""
+    errors = []
+    seen = {}
+    for index, table in enumerate(registry.get("tables", [])):
+        if not isinstance(table, dict):
+            continue
+        number = table.get("number")
+        if number in seen:
+            errors.append(
+                "tables[%d]: 表号 %r 与 tables[%d] 重复" % (index, number, seen[number])
+            )
+        else:
+            seen[number] = index
+        source = table.get("generatedFrom")
+        if source and source not in block_names:
+            # 数据块还没收录（例如 A2h 在 #6）：允许，但站点上必须还能标成待补，
+            # 所以这里只接受 pending，不接受 collected。
+            if table.get("status") != "pending":
+                errors.append(
+                    "tables[%d]: 表 %r 声明由 %r 生成，但没有这个数据块，因此不能标为 %r"
+                    % (index, number, source, table.get("status"))
+                )
+        if table.get("status") == "generated" and not source:
+            errors.append("tables[%d]: 表 %r 标为 generated，但没写 generatedFrom" % (index, number))
     return errors
 
 
@@ -202,22 +445,9 @@ def consistency_errors(document):
     errors = []
     if document.get("handEdited") and not document.get("handEditNote"):
         errors.append("handEdited 为真时必须写 handEditNote，说明哪些字段是手改的")
-    size = document.get("size", 0)
-    seen = {}
-    for index, byte in enumerate(document.get("bytes", [])):
-        if not isinstance(byte, dict):
-            continue
-        address = byte.get("address")
-        if address in seen:
-            errors.append(
-                "地址 %r 重复出现在 bytes[%d] 与 bytes[%d]" % (address, seen[address], index)
-            )
-        else:
-            seen[address] = index
-        if isinstance(address, int):
-            end = address + byte.get("length", 1)
-            if end > size:
-                errors.append("bytes[%d] 覆盖到 %d，超出块大小 %d" % (index, end, size))
+    errors.extend(coverage_errors(document))
+    errors.extend(checksum_errors(document))
+    errors.extend(bit_errors(document))
     return errors
 
 
@@ -233,6 +463,9 @@ def validate_data_dir(data_dir, schema_dir):
     files = sorted(data_path.rglob("*.json")) if data_path.is_dir() else []
     if not files:
         return 0, ["%s: 没有找到任何数据文件" % (data_path,)]
+
+    registries = {}
+    documents = []
     for file_path in files:
         label = file_path.relative_to(data_path.parent).as_posix()
         try:
@@ -258,11 +491,31 @@ def validate_data_dir(data_dir, schema_dir):
         schema_errors = validate(document, schema)
         for message in schema_errors:
             errors.append("%s: %s" % (label, message))
-        if not schema_errors:
-            for message in location_errors(document, file_path, data_path):
-                errors.append("%s: %s" % (label, message))
+        if schema_errors:
+            continue
+        for message in location_errors(document, file_path, data_path):
+            errors.append("%s: %s" % (label, message))
+        if is_registry(file_path):
+            registries[file_path.parent] = (label, document)
+        else:
+            documents.append((label, file_path, document))
             for message in consistency_errors(document):
                 errors.append("%s: %s" % (label, message))
+
+    for revision_dir, (_label, registry) in sorted(registries.items()):
+        blocks = {
+            path.stem
+            for path in revision_dir.glob("*.json")
+            if not is_registry(path)
+        }
+        for message in registry_errors(registry, blocks):
+            errors.append("%s: %s" % (_label, message))
+
+    for label, file_path, document in documents:
+        registry_entry = registries.get(file_path.parent)
+        registry = registry_entry[1] if registry_entry else None
+        for message in table_errors(document, registry):
+            errors.append("%s: %s" % (label, message))
     return len(files), errors
 
 

@@ -1,19 +1,23 @@
 {
   "nav.index": {
-    "zh": "{spec} Rev {revision} · {block} 索引",
-    "en": "{spec} Rev {revision} · {block} index"
+    "zh": "{spec} Rev {revision} · {block} 寄存器映射",
+    "en": "{spec} Rev {revision} · {block} register map"
+  },
+  "nav.tables": {
+    "zh": "全部表格",
+    "en": "All tables"
   },
   "index.title": {
-    "zh": "{spec} Rev {revision} · {block} 索引",
-    "en": "{spec} Rev {revision} · {block} index"
+    "zh": "{spec} Rev {revision} · {block} 寄存器映射",
+    "en": "{spec} Rev {revision} · {block} register map"
   },
   "index.h1": {
     "zh": "{spec} Rev {revision} · {block} 寄存器映射",
     "en": "{spec} Rev {revision} · {block} register map"
   },
   "index.lede": {
-    "zh": "已收录 {collected} / {size} 个字节。标为「待补」的字节表示本站尚未收录，<strong>不代表该字节不存在</strong>。",
-    "en": "Collected {collected} / {size} bytes. A byte marked “pending” has not been collected here yet; <strong>its absence does not mean the byte does not exist</strong>."
+    "zh": "共 {size} 个字节，全部已收录。地址按字段分组列出；多字节字段给出地址范围。",
+    "en": "All {size} bytes are collected. Addresses are grouped by field; multi-byte fields are shown as address ranges."
   },
   "index.col.address": {
     "zh": "地址",
@@ -36,8 +40,96 @@
     "en": "{name_en} — {spec} Rev {revision} · {block} byte {address}"
   },
   "byte.position": {
-    "zh": "（{block} 字节 {address}）",
-    "en": "(byte {address} of {block})"
+    "zh": "{block} 字节 {address}",
+    "en": "{block} byte {address}"
+  },
+  "byte.field_of": {
+    "zh": "所属字段",
+    "en": "Field"
+  },
+  "byte.offset": {
+    "zh": "字段内偏移",
+    "en": "Offset in field"
+  },
+  "byte.offset_value": {
+    "zh": "第 {offset} 个字节（共 {length} 个）",
+    "en": "byte {offset} of {length}"
+  },
+  "byte.section": {
+    "zh": "所属分组",
+    "en": "Section"
+  },
+  "byte.reserved": {
+    "zh": "保留：本字节在规范中没有定义含义，值不影响互操作。",
+    "en": "Reserved: this specification defines no meaning for this byte; its value does not affect interoperability."
+  },
+  "byte.bits": {
+    "zh": "位定义",
+    "en": "Bit definitions"
+  },
+  "byte.tables": {
+    "zh": "相关表格",
+    "en": "Related tables"
+  },
+  "byte.checksum": {
+    "zh": "校验和",
+    "en": "Checksum"
+  },
+  "byte.checksum_rule": {
+    "zh": "{start} 至 {end} 之和的低 8 位。",
+    "en": "the low 8 bits of the sum of {start} through {end}."
+  },
+  "byte.checksum_target_of": {
+    "zh": "校验和覆盖本字节",
+    "en": "Checksum covers this byte"
+  },
+  "bit.col.bit": {
+    "zh": "位",
+    "en": "Bit"
+  },
+  "bit.col.name": {
+    "zh": "含义",
+    "en": "Meaning"
+  },
+  "bit.col.description": {
+    "zh": "说明",
+    "en": "Description"
+  },
+  "tables.title": {
+    "zh": "{spec} Rev {revision} · 表格清单",
+    "en": "{spec} Rev {revision} · table index"
+  },
+  "tables.h1": {
+    "zh": "{spec} Rev {revision} · 表格清单",
+    "en": "{spec} Rev {revision} · table index"
+  },
+  "tables.lede": {
+    "zh": "规范正文中共 {total} 张表，已结构化 {structured} 张。标为「待补」的表表示本站尚未收录，<strong>不代表该表不存在</strong>；未收录的表不提供链接。",
+    "en": "{total} tables appear in this revision; {structured} have been structured so far. A table marked “pending” has not been collected here yet; <strong>its absence does not mean the table does not exist</strong>, and pending tables are never linked."
+  },
+  "tables.col.number": {
+    "zh": "表号",
+    "en": "Table"
+  },
+  "tables.col.section": {
+    "zh": "章节",
+    "en": "Section"
+  },
+  "tables.col.title": {
+    "zh": "标题",
+    "en": "Title"
+  },
+  "tables.col.status": {
+    "zh": "状态",
+    "en": "Status"
+  },
+  "tables.status.collected": {
+    "zh": "已收录",
+    "en": "collected"
+  },
+  "tables.status.generated": {
+    "zh": "由寄存器数据生成",
+    "en": "generated from register data"
   },
   "label.address": {
     "zh": "地址",
@@ -75,8 +167,8 @@
     "zh": "English",
     "en": "English"
   },
-  "byte.length_unit": {
-    "zh": "字节",
-    "en": "byte"
+  "byte.table_ref": {
+    "zh": "表 {number}",
+    "en": "Table {number}"
   }
 }

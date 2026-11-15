@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="zh-CN" data-lang="{{default_lang}}" data-title-zh="{{title_zh:attr}}" data-title-en="{{title_en:attr}}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{title_zh}}</title>
+<link rel="stylesheet" href="{{style_href}}">
+<!-- 同步加载：在首次绘制之前就把语言定下来，免得英文读者看到一闪而过的中文。 -->
+<script src="{{lang_href}}"></script>
+</head>
+<body>
+<header class="site-header">
+  <nav class="crumbs">{{bi:tables.title}}</nav>
+  {{lang_switch:raw}}
+</header>
+<main class="page">
+  <h1>{{bi:tables.h1}}</h1>
+  <p class="lede">{{bi:tables.lede}}</p>
+  <table class="byte-table table-registry">
+    <thead>
+      <tr><th>{{bi:tables.col.number}}</th><th>{{bi:tables.col.section}}</th><th>{{bi:tables.col.title}}</th><th>{{bi:tables.col.status}}</th></tr>
+    </thead>
+    <tbody>
+      {{rows:raw}}
+    </tbody>
+  </table>
+</main>
+<footer class="site-footer">
+  <p class="disclaimer">{{bi:footer.disclaimer}}</p>
+</footer>
+</body>
+</html>

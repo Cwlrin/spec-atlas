@@ -1,0 +1,97 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "tables.schema.json",
+  "title": "表登记：某个修订版正文里出现的全部表格及其收录状态",
+  "type": "object",
+  "required": [
+    "spec",
+    "revision",
+    "tables"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "spec": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+    },
+    "revision": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+$"
+    },
+    "handEdited": {
+      "type": "boolean"
+    },
+    "handEditNote": {
+      "type": "string",
+      "minLength": 1
+    },
+    "note": {
+      "$ref": "#/definitions/i18n"
+    },
+    "tables": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/definitions/table"
+      }
+    }
+  },
+  "definitions": {
+    "i18n": {
+      "type": "object",
+      "required": [
+        "zh",
+        "en"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "zh": {
+          "type": "string",
+          "minLength": 1
+        },
+        "en": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "table": {
+      "type": "object",
+      "required": [
+        "number",
+        "section",
+        "title",
+        "status"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "number": {
+          "type": "string",
+          "pattern": "^[0-9]+-[0-9]+$"
+        },
+        "section": {
+          "type": "string",
+          "pattern": "^[0-9]+(\\.[0-9]+)*$"
+        },
+        "title": {
+          "$ref": "#/definitions/i18n"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "generated",
+            "pending",
+            "collected"
+          ]
+        },
+        "generatedFrom": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+$"
+        },
+        "note": {
+          "$ref": "#/definitions/i18n"
+        }
+      }
+    }
+  }
+}

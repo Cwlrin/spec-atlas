@@ -93,3 +93,44 @@ code { font-family: ui-monospace, "SFMono-Regular", Consolas, monospace; }
 .byte-table tr.pending td { color: var(--muted); }
 .byte-table a { color: var(--accent); text-decoration: none; }
 .byte-table a:hover { text-decoration: underline; }
+
+/* 索引里的保留区：不给链接，用弱化色与左侧细线标出，别和「待补」混淆。 */
+.byte-table tr.reserved td { color: var(--muted); }
+.byte-table tr.reserved td:first-child { border-left: 3px solid var(--line); }
+
+/* 字段页的附加区块：位定义、校验和、字段内偏移。 */
+.byte-offset,
+.byte-reserved,
+.byte-covered,
+.byte-tables,
+.section-nav { color: var(--muted); margin: 1rem 0 0; }
+
+.byte-reserved {
+  padding: 0.6rem 0.8rem;
+  background: var(--bg-muted);
+  border-left: 3px solid var(--line);
+  border-radius: 0 6px 6px 0;
+}
+
+.bits,
+.checksum { margin-top: 2rem; }
+.bits h2,
+.checksum h2 { font-size: 1.05rem; margin: 0 0 0.5rem; }
+
+.bit-table { width: 100%; border-collapse: collapse; }
+.bit-table th,
+.bit-table td { text-align: left; padding: 0.4rem 0.6rem; border-bottom: 1px solid var(--line); }
+.bit-table thead th { background: var(--bg-muted); font-weight: 600; }
+.bit-table td:first-child { width: 4rem; }
+.bit-table tr.reserved td { color: var(--muted); }
+
+/* 表格清单：表号用等宽字体便于竖向扫读。 */
+.table-registry td:first-child { font-family: ui-monospace, "SFMono-Regular", Consolas, monospace; white-space: nowrap; }
+.table-registry td:nth-child(2) { color: var(--muted); white-space: nowrap; }
+
+@media (max-width: 40rem) {
+  .field-meta { grid-template-columns: 1fr; gap: 0.15rem; }
+  .field-meta dt { margin-top: 0.6rem; }
+  .byte-table th:nth-child(3),
+  .byte-table td:nth-child(3) { display: none; }
+}

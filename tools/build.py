@@ -1,13 +1,17 @@
 """构建入口（单一接缝）：data/ + site/ -> dist/。
 
 顺序：先按 schema 与位置校验数据，任何一处不合法就整个构建失败；
-然后渲染字段页与索引页，最后拷贝静态资源。产物只由输入决定（无时间戳、
-无随机顺序），因此连续两次构建的产物逐字节一致。
+然后渲染字段页、块索引页与表格清单页，最后拷贝静态资源。产物只由输入决定
+（无时间戳、无随机顺序），因此连续两次构建的产物逐字节一致。
 
 双语：每条用户可见文案都渲染成中英两版并存的一个节点（<span class="i18n">），
 由根元素 <html data-lang="zh|en"> 决定显示哪一版。切换只改这个属性，
 不重建页面、不换 URL，所以切换后停在当前页。界面文案在 site/i18n.json；
 字段名与说明直接复用 data/ 里成对存放的 {zh, en}。
+
+地址与条目是两层：一条 byte 覆盖 [address, address+length)，索引按条目列
+（多字节字段给地址范围、只链到首地址），字段页则每个地址一页，页面上说清
+「这是哪个字段的第几个字节」以及所属分组。
 """
 
 from __future__ import annotations
@@ -82,8 +86,8 @@ def plain(text):
 def substitute(pattern, template, values, mode):
     """单遍替换占位符。
 
-    mode="copy"：取值是界面文案，先过 escape_copy 再按 attribute 需要补引号，
-                 缺失直接构建失败（文案表与代码必须同步）。
+    mode="copy"：取值是界面文案，先过 escape_copy；缺失直接构建失败
+                 （文案表与代码必须同步）。
     mode="page"：取值是页面片段或算好的字符串，缺失容忍（返回原样）。
     """
     missing = []
@@ -152,7 +156,7 @@ class Copy:
     """模板取文案的唯一入口：一个键 -> 已转义的中英两版。
 
     来源有两处：site/i18n.json 的界面文案，和数据里本就成对的 {zh, en}
-    （字段名、说明）。数据值不过占位符填充，原样转义使用。
+    （字段名、说明）。后者原样转义，不参与占位符填充。
     """
 
     def __init__(self, entries, values):
@@ -183,9 +187,13 @@ class Copy:
 
         return COPY_SLOT.sub(replace, template)
 
+    def with_values(self, **extra):
+        """同一份文案表、换一套占位符取值（例如把校验和区间填进去）。"""
+        return Copy(self.entries, dict(self.values, **extra))
+
 
 def render(template, values):
-    """替换 {{key}} / {{key:raw}} / {{key:attr}}；页码片段用 :raw 原样插入。"""
+    """替换 {{key}} / {{key:raw}} / {{key:attr}}；页面片段用 :raw 原样插入。"""
 
     def replace(match):
         key, mode = match.group(1), match.group(2)
@@ -216,16 +224,24 @@ def block_label(block):
 
 
 def load_blocks(data_dir):
+    """读出每个寄存器块，以及与之同目录的表登记。
+
+    返回 (blocks, registries)：blocks 是 [(spec, revision, block, document)]，
+    registries 是 {(spec, revision): 表登记文档}。
+    """
     blocks = []
+    registries = {}
     for path in sorted(Path(data_dir).rglob("*.json")):
         relative = path.relative_to(Path(data_dir))
         if len(relative.parts) != 3:
             continue
         document = json.loads(path.read_text(encoding="utf-8"))
-        blocks.append(
-            (relative.parts[0], revision_label(relative.parts[1]), path.stem, document)
-        )
-    return blocks
+        spec, revision_dir = relative.parts[0], relative.parts[1]
+        if schema_check.is_registry(path):
+            registries[(spec, revision_label(revision_dir))] = document
+            continue
+        blocks.append((spec, revision_label(revision_dir), path.stem, document))
+    return blocks, registries
 
 
 def byte_pair(field):
@@ -233,28 +249,35 @@ def byte_pair(field):
     return escape_data(field["zh"]), escape_data(field["en"])
 
 
-class Page:
-    """一个寄存器块的一页：页面文案取值、资源相对路径、索引行。"""
+class SitePage:
+    """站点某一页的公共部分：文案表、相对路径、语言切换器。
 
-    def __init__(self, entries, spec, revision, block, document, depth):
+    字段页、索引页、表格清单页只有各自的内容块不同，外壳与路径算法共用一份。
+    """
+
+    def __init__(self, entries, spec, revision, depth):
         self.entries = entries
         self.spec = spec
         self.revision = revision
-        self.block = block
-        self.document = document
         self.values = {
             "default_lang": DEFAULT_LANG,
             "spec": spec.upper(),
             "revision": revision,
-            "block": block_label(block),
-            "size": document["size"],
-            "collected": sum(byte.get("length", 1) for byte in document["bytes"]),
             "style_href": "../" * depth + "style.css",
             "lang_href": "../" * depth + "lang.js",
-            # 字段页与索引页同目录，索引导航就是相邻文件，不必绕回站点根。
-            "index_href": "index.html",
         }
-        self.copy = Copy(entries, self.values)
+
+    def finish(self, template, switch_template, values):
+        """填模板：先补语言切换器，再渲染。子类把自己的内容块放进 values。"""
+        self.copy = Copy(self.entries, dict(self.values, **values))
+        return render(
+            self.copy.expand(template),
+            dict(
+                self.values,
+                **values,
+                lang_switch=self.switcher(switch_template),
+            ),
+        )
 
     def switcher(self, template):
         """语言切换器：两个状态按钮，当前状态由 aria-pressed 表达。"""
@@ -266,70 +289,326 @@ class Page:
             },
         )
 
-    def byte_copy(self, byte):
-        values = dict(self.values)
-        values.update(
-            {
-                "address": byte["address"],
-                "address_hex": hex_address(byte["address"]),
-                "length": byte.get("length", 1),
-                "name_zh": byte["name"]["zh"],
-                "name_en": byte["name"]["en"],
-                "name": byte["name"],
-                "description": byte["description"],
-            }
-        )
-        return Copy(self.entries, values)
-
-    def titles(self, copy, key):
+    def titles(self, key):
         """<title> 与 data-title-*：纯文本，不带标签。"""
-        zh, en = copy.pair(key)
+        zh, en = self.copy.pair(key)
         return plain(zh), plain(en)
 
-    def render_byte(self, template, byte):
-        copy = self.byte_copy(byte)
-        title_zh, title_en = self.titles(copy, "byte.title")
+
+class Page(SitePage):
+    """一个寄存器块的一页：字段内容、地址定位、各类片段。"""
+
+    def __init__(self, entries, spec, revision, block, document, depth, registry):
+        super().__init__(entries, spec, revision, depth)
+        self.block = block
+        self.document = document
+        self.registry = registry
+        self.values.update(
+            {
+                "block": block_label(block),
+                "size": document["size"],
+                # 字段页与索引页同目录，索引导航就是相邻文件，不必绕回站点根。
+                "index_href": "index.html",
+            }
+        )
+        self.copy = Copy(entries, self.values)
+
+    # ---- 地址 -> 条目 ---------------------------------------------------
+
+    def entry_of(self, address):
+        for byte in self.document["bytes"]:
+            if byte["address"] <= address < byte["address"] + byte.get("length", 1):
+                return byte
+        fail("地址 %d 没有任何定义" % (address,))
+
+    def section_of(self, address):
+        for section in self.document.get("sections", []):
+            if section["start"] <= address <= section["end"]:
+                return section
+        return None
+
+    def rule(self, rule_id):
+        for rule in self.document.get("checksums", []):
+            if rule["id"] == rule_id:
+                return rule
+        return None
+
+    # ---- 各种片段 -------------------------------------------------------
+
+    def byte_copy(self, byte, address):
+        """页面文案的占位符：address 是**当前访问的地址**，不是条目起点。
+
+        多字节字段每个地址一页，标题里的地址必须是这一页的地址，否则
+        0x14-0x23 的十六页会全都自称 0x14。
+        """
+        return Copy(
+            self.entries,
+            dict(
+                self.values,
+                address=address,
+                address_hex=hex_address(address),
+                field_address_hex=hex_address(byte["address"]),
+                length=byte.get("length", 1),
+                name_zh=byte["name"]["zh"],
+                name_en=byte["name"]["en"],
+                name=byte["name"],
+                description=byte["description"],
+            ),
+        )
+
+    def section_html(self, address):
+        section = self.section_of(address)
+        if section is None:
+            return ""
+        return "%s（%s–%s）" % (
+            bilingual(*byte_pair(section["name"])),
+            hex_address(section["start"]),
+            hex_address(section["end"]),
+        )
+
+    def field_html(self, byte):
+        """字段名 + 地址范围，让「这个地址属于哪个字段」一眼可见。"""
+        name = bilingual(*byte_pair(byte["name"]))
+        length = byte.get("length", 1)
+        start = hex_address(byte["address"])
+        if length == 1:
+            return "%s（%s）" % (name, start)
+        return "%s（%s-%s）" % (name, start, hex_address(byte["address"] + length - 1))
+
+    def offset_html(self, byte, offset):
+        """多字节字段要说清自己是第几个字节，否则读者无法定位。"""
+        length = byte.get("length", 1)
+        if length == 1:
+            return ""
+        copy = self.copy.with_values(offset=offset + 1, length=length)
+        return '<p class="byte-offset">%s</p>' % (
+            bilingual(*copy.pair("byte.offset_value")),
+        )
+
+    def reserved_html(self, byte):
+        if not byte.get("reserved"):
+            return ""
+        return '<p class="byte-reserved">%s</p>' % (
+            bilingual(*self.copy.pair("byte.reserved")),
+        )
+
+    def bits_html(self, byte):
+        """位定义表：一位一行；保留位也写出来，免得读者以为漏了。"""
+        bits = byte.get("bits")
+        if not bits:
+            return ""
+        head = "".join(
+            "<th>%s</th>" % (bilingual(*self.copy.pair(key)),)
+            for key in ("bit.col.bit", "bit.col.name", "bit.col.description")
+        )
+        rows = []
+        for bit in sorted(bits, key=lambda item: -item["bit"]):
+            rows.append(
+                '<tr class="%s"><td><code>%d</code></td><td>%s</td><td>%s</td></tr>'
+                % (
+                    "reserved" if bit.get("reserved") else "defined",
+                    bit["bit"],
+                    bilingual(*byte_pair(bit["name"])),
+                    bilingual(*byte_pair(bit["description"])),
+                )
+            )
+        return (
+            '<section class="bits"><h2>%s</h2><table class="bit-table">'
+            "<thead><tr>%s</tr></thead><tbody>%s</tbody></table></section>"
+            % (bilingual(*self.copy.pair("byte.bits")), head, "".join(rows))
+        )
+
+    def checksum_html(self, byte, address):
+        """校验和：本字节是什么校验和，以及本字节被哪条规则覆盖。"""
+        parts = []
+        rule_id = byte.get("checksumFor")
+        if rule_id:
+            rule = self.rule(rule_id)
+            if rule is None:
+                fail("地址 %d 声明 checksumFor %r，但没有这条规则" % (address, rule_id))
+            copy = self.copy.with_values(
+                start=hex_address(rule["start"]), end=hex_address(rule["end"])
+            )
+            parts.append(
+                "<p><strong>%s</strong> · %s</p>"
+                % (
+                    bilingual(*byte_pair(rule["name"])),
+                    bilingual(*copy.pair("byte.checksum_rule")),
+                )
+            )
+
+        covering = [
+            rule
+            for rule in self.document.get("checksums", [])
+            if rule["start"] <= address <= rule["end"]
+        ]
+        if covering:
+            parts.append(
+                '<p class="byte-covered">%s：%s</p>'
+                % (
+                    bilingual(*self.copy.pair("byte.checksum_target_of")),
+                    "、".join(bilingual(*byte_pair(item["name"])) for item in covering),
+                )
+            )
+        if not parts:
+            return ""
+        return '<section class="checksum">%s</section>' % ("".join(parts),)
+
+    def tables_html(self, byte):
+        numbers = byte.get("tableRefs") or []
+        if not numbers:
+            return ""
+        refs = []
+        for number in numbers:
+            copy = self.copy.with_values(number=number)
+            refs.append(bilingual(*copy.pair("byte.table_ref")))
+        return '<p class="byte-tables">%s：%s</p>' % (
+            bilingual(*self.copy.pair("byte.tables")),
+            "、".join(refs),
+        )
+
+    # ---- 整页 -----------------------------------------------------------
+
+    def render_byte(self, template, address):
+        byte = self.entry_of(address)
+        offset = address - byte["address"]
+        copy = self.byte_copy(byte, address)
+        zh, en = copy.pair("byte.title")
+        title_zh, title_en = plain(zh), plain(en)
         return render(
             copy.expand(template),
             dict(
                 self.values,
                 title_zh=title_zh,
                 title_en=title_en,
-                address_hex=hex_address(byte["address"]),
+                address_hex=hex_address(address),
                 length=byte.get("length", 1),
+                section=self.section_html(address),
+                field=self.field_html(byte),
+                offset=self.offset_html(byte, offset),
+                reserved=self.reserved_html(byte),
+                bits=self.bits_html(byte),
+                checksum=self.checksum_html(byte, address),
+                tables=self.tables_html(byte),
             ),
         )
 
     def render_index(self, template):
-        title_zh, title_en = self.titles(self.copy, "index.title")
+        title_zh, title_en = self.titles("index.title")
         return render(
             self.copy.expand(template),
-            dict(self.values, title_zh=title_zh, title_en=title_en, rows=self.rows()),
+            dict(
+                self.values,
+                title_zh=title_zh,
+                title_en=title_en,
+                rows=self.rows(),
+                tables_link=self.tables_link(),
+            ),
+        )
+
+    def tables_link(self):
+        if not self.registry:
+            return ""
+        return '<a href="../tables.html">%s</a>' % (
+            bilingual(*self.copy.pair("nav.tables")),
         )
 
     def rows(self):
-        """索引表的一行：已收录的给链接与名称，未收录的标「待补」。"""
-        collected = {byte["address"]: byte for byte in self.document["bytes"]}
-        pending = bilingual(*self.copy.pair("index.pending"))
+        """索引表按条目列：多字节字段给地址范围、只链到首地址。"""
         rows = []
-        for address in range(self.document["size"]):
-            if address in collected:
-                byte = collected[address]
+        for byte in sorted(self.document["bytes"], key=lambda item: item["address"]):
+            length = byte.get("length", 1)
+            start = byte["address"]
+            span = (
+                hex_address(start)
+                if length == 1
+                else "%s-%s" % (hex_address(start), hex_address(start + length - 1))
+            )
+            name = bilingual(*byte_pair(byte["name"]))
+            description = bilingual(*byte_pair(byte["description"]))
+            if byte.get("reserved"):
                 rows.append(
-                    '<tr class="collected"><td>%s</td><td><a href="%d.html">%s</a></td><td>%s</td></tr>'
-                    % (
-                        hex_address(address),
-                        address,
-                        bilingual(*byte_pair(byte["name"])),
-                        bilingual(*byte_pair(byte["description"])),
-                    )
+                    '<tr class="reserved"><td>%s</td><td>%s</td><td>%s</td></tr>'
+                    % (span, name, description)
                 )
             else:
                 rows.append(
-                    '<tr class="pending"><td>%s</td><td>%s</td><td></td></tr>'
-                    % (hex_address(address), pending)
+                    '<tr class="collected"><td>%s</td><td>%s%s</td><td>%s</td></tr>'
+                    % (span, '<a href="%d.html">%s</a>' % (start, name), self.offsets_html(byte), description)
                 )
         return "\n      ".join(rows)
+
+    def offsets_html(self, byte):
+        """多字节字段里的每个地址也要能从索引直达，否则「按地址打开」只剩首地址。
+
+        链接放在字段名之后的同一格里，用全角中点分隔，扫读时仍是一行一个字段。
+        """
+        length = byte.get("length", 1)
+        if length == 1:
+            return ""
+        start = byte["address"]
+        links = "".join(
+            '<a href="%d.html">%s</a>' % (address, hex_address(address))
+            for address in range(start + 1, start + length)
+        )
+        return ' <span class="offsets">%s</span>' % (links,)
+
+
+def copy_with(values):
+    """占位符取值：模板缺哪个键就在构建期失败，不留空位。"""
+    return dict(values)
+
+
+class TablesPage(SitePage):
+    """一个修订版的表格清单页：每张表一行，未收录的标「待补」且不给链接。"""
+
+    def __init__(self, entries, spec, revision, registry, depth):
+        super().__init__(entries, spec, revision, depth)
+        self.registry = registry
+        tables = registry.get("tables", [])
+        self.values.update(
+            {
+                "block": "",
+                "size": 0,
+                # 与文案一致：structured = 已结构化的表数（pending 与 generated 都不算）。
+                "structured": sum(1 for table in tables if table.get("status") == "collected"),
+                "total": len(tables),
+            }
+        )
+        self.copy = Copy(entries, self.values)
+
+    def rows(self):
+        rows = []
+        pending = bilingual(*self.copy.pair("index.pending"))
+        for table in self.registry.get("tables", []):
+            status = table.get("status")
+            if status == "collected":
+                cell = bilingual(*self.copy.pair("tables.status.collected"))
+            elif status == "generated":
+                cell = bilingual(*self.copy.pair("tables.status.generated"))
+            else:
+                cell = pending
+            rows.append(
+                '<tr class="%s"><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>'
+                % (
+                    "pending" if status == "pending" else "collected",
+                    bilingual(
+                        *self.copy.with_values(number=table["number"]).pair("byte.table_ref")
+                    ),
+                    escape_data(table["section"]),
+                    bilingual(*byte_pair(table["title"])),
+                    cell,
+                )
+            )
+        return "\n      ".join(rows)
+
+    def render(self, template, switch_template):
+        title_zh, title_en = self.titles("tables.title")
+        return self.finish(
+            template,
+            switch_template,
+            {"title_zh": title_zh, "title_en": title_en, "rows": self.rows()},
+        )
 
 
 def build(data_dir, dist_dir, site_dir, schema_dir):
@@ -343,6 +622,7 @@ def build(data_dir, dist_dir, site_dir, schema_dir):
     templates = Path(site_dir) / "templates"
     byte_template = (templates / "byte.html").read_text(encoding="utf-8")
     index_template = (templates / "index.html").read_text(encoding="utf-8")
+    tables_template = (templates / "tables.html").read_text(encoding="utf-8")
     switch_template = (templates / "lang-switch.html").read_text(encoding="utf-8")
 
     dist = Path(dist_dir).resolve()
@@ -356,21 +636,37 @@ def build(data_dir, dist_dir, site_dir, schema_dir):
     shutil.copyfile(Path(site_dir) / "style.css", dist / "style.css")
     shutil.copyfile(Path(site_dir) / "lang.js", dist / "lang.js")
 
-    blocks = load_blocks(data_dir)
+    blocks, registries = load_blocks(data_dir)
+    revisions = set()
     for spec, revision, block, document in blocks:
+        registry = registries.get((spec, revision))
         out_dir = dist / spec / revision / block
         out_dir.mkdir(parents=True)
         depth = len(out_dir.relative_to(dist).parts)
-        page = Page(entries, spec, revision, block, document, depth)
+        page = Page(entries, spec, revision, block, document, depth, registry)
         page.values["lang_switch"] = page.switcher(switch_template)
 
-        for byte in sorted(document["bytes"], key=lambda item: item["address"]):
-            rendered = page.render_byte(byte_template, byte)
-            (out_dir / ("%d.html" % byte["address"])).write_text(
+        # 每个地址一页：条目覆盖了哪些地址，就为哪些地址生成页面。
+        for address in range(document["size"]):
+            rendered = page.render_byte(byte_template, address)
+            (out_dir / ("%d.html" % address)).write_text(
                 rendered, encoding="utf-8", newline="\n"
             )
         (out_dir / "index.html").write_text(
             page.render_index(index_template), encoding="utf-8", newline="\n"
+        )
+        revisions.add((spec, revision))
+
+    for spec, revision in sorted(revisions):
+        registry = registries.get((spec, revision))
+        if registry is None:
+            continue
+        rev_dir = dist / spec / revision
+        rev_dir.mkdir(parents=True, exist_ok=True)
+        depth = len(rev_dir.relative_to(dist).parts)
+        page = TablesPage(entries, spec, revision, registry, depth)
+        (rev_dir / "tables.html").write_text(
+            page.render(tables_template, switch_template), encoding="utf-8", newline="\n"
         )
 
     print("构建完成：%d 个寄存器块，产物在 %s" % (len(blocks), dist))

@@ -4,13 +4,43 @@
   "block": "a0",
   "size": 128,
   "handEdited": true,
-  "handEditNote": "测试固定数据：字段名故意改成探测值，用来证明页面内容来自 JSON 而不是模板。",
+  "handEditNote": "测试固定数据：字段名故意改成探测值，用来证明页面内容来自 JSON 而不是模板；其余字节标为保留以满足全覆盖规则。",
+  "sections": [
+    {
+      "start": 0,
+      "end": 127,
+      "name": {
+        "zh": "整块（测试用）",
+        "en": "WHOLE BLOCK (FIXTURE)"
+      }
+    }
+  ],
+  "checksums": [],
   "bytes": [
     {
       "address": 0,
       "length": 1,
-      "name": { "zh": "探测用字段名", "en": "Probe Field" },
-      "description": { "zh": "探测用说明", "en": "Probe <description> & more" }
+      "name": {
+        "zh": "探测用字段名",
+        "en": "Probe Field"
+      },
+      "description": {
+        "zh": "探测用说明",
+        "en": "Probe <description> & more"
+      }
+    },
+    {
+      "address": 1,
+      "length": 127,
+      "reserved": true,
+      "name": {
+        "zh": "保留",
+        "en": "Reserved"
+      },
+      "description": {
+        "zh": "测试固定数据里的保留区。",
+        "en": "Reserved area in the test fixture."
+      }
     }
   ]
 }

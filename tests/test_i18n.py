@@ -21,26 +21,21 @@ import unittest
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+from support import build, run  # noqa: E402
 DIST = ROOT / "dist"
 BLOCK_DIR = DIST / "sff-8472" / "12.4" / "a0"
 BYTE_PAGE = BLOCK_DIR / "0.html"
 INDEX_PAGE = BLOCK_DIR / "index.html"
+# 表格清单页与字段页同一套双语规则，不能因为新加就跳过检查。
+TABLES_PAGE = DIST / "sff-8472" / "12.4" / "tables.html"
+PAGES = (BYTE_PAGE, INDEX_PAGE, TABLES_PAGE)
 COPY_FILE = ROOT / "site" / "i18n.json"
 DATA_DIR = ROOT / "data"
 GLOSSARY = ROOT / "GLOSSARY.md"
 STYLE_CSS = ROOT / "site" / "style.css"
 PROBE = ROOT / "tests" / "fixtures" / "lang-probe.js"
-
-
-def run(args, cwd=ROOT):
-    return subprocess.run(
-        [sys.executable] + args,
-        cwd=str(cwd),
-        capture_output=True,
-        text=True,
-        encoding="utf-8",
-        errors="replace",
-    )
 
 
 def node(scenario):
@@ -58,16 +53,6 @@ def node(scenario):
             % (scenario, result.returncode, result.stdout, result.stderr)
         )
     return json.loads(result.stdout)
-
-
-def build(*extra):
-    result = run(["tools/build.py"] + list(extra))
-    if result.returncode != 0:
-        raise AssertionError(
-            "build failed (%s)\nstdout:\n%s\nstderr:\n%s"
-            % (result.returncode, result.stdout, result.stderr)
-        )
-    return result
 
 
 class _Attributes(html.parser.HTMLParser):
@@ -152,7 +137,7 @@ class BilingualMarkupTest(unittest.TestCase):
         build()
 
     def test_every_bilingual_node_pairs_zh_with_en(self):
-        for path in (BYTE_PAGE, INDEX_PAGE):
+        for path in PAGES:
             html = path.read_text(encoding="utf-8")
             nodes = bilingual_nodes(html)
             self.assertTrue(nodes, "%s: 没有找到任何双语节点" % (path.name,))
@@ -176,7 +161,7 @@ class BilingualMarkupTest(unittest.TestCase):
             )
 
     def test_language_state_is_on_the_root_element(self):
-        for path, page in ((BYTE_PAGE, "字段页"), (INDEX_PAGE, "索引页")):
+        for path, page in ((BYTE_PAGE, "字段页"), (INDEX_PAGE, "索引页"), (TABLES_PAGE, "表格清单页")):
             html = path.read_text(encoding="utf-8")
             root = next(tag for tag in tags(html) if tag.get("data-lang") is not None)
             self.assertEqual(root.get("data-lang"), "zh", page + "：默认必须是中文")
@@ -302,6 +287,44 @@ def glossary_terms():
     return pairs
 
 
+# 「位」是术语，但「单位」「位置」「两位」这类词里的「位」不是。中文没有词界，
+# 按子串匹配会把它们当成术语命中，因此在匹配前先把这些复合词整体遮蔽掉。
+# 两类：与 bit 无关的同形词（单位/位置/单元），以及数位词（个位/十位/两位数）。
+# 只收录确实会出现在本仓库文案里的词，别把这里变成万能免检名单。
+NON_TERM_COMPOUNDS = (
+    "单位",
+    "位置",
+    "定位",
+    "单元",
+    "十位",
+    "两位",
+    "位数",
+)
+
+
+def glossary_problems(items, pairs):
+    """逐条检查：中文用了术语，英文必须写出术语表里的英文对应词。"""
+    problems = []
+    for label, entry in items:
+        zh, en = entry["zh"], entry["en"]
+        for word in NON_TERM_COMPOUNDS:
+            zh = zh.replace(word, "\0" * len(word))
+        # 长词先匹配并遮蔽，免得「位」这种短词命中「位域」内部
+        masked_zh, masked_en = zh, en.lower()
+        for zh_term, en_term in pairs:
+            if zh_term not in masked_zh:
+                continue
+            masked_zh = masked_zh.replace(zh_term, "\0" * len(zh_term))
+            if en_term.lower() in masked_en:
+                masked_en = masked_en.replace(en_term.lower(), "\0" * len(en_term))
+            else:
+                problems.append(
+                    "%s: 中文用「%s」，英文应按术语表写「%s」，实际是 %r"
+                    % (label, zh_term, en_term, entry["en"])
+                )
+    return problems
+
+
 def rejected_terms():
     """从「措辞约定」读出被否掉的写法：「A」不写成「B」。"""
     text = GLOSSARY.read_text(encoding="utf-8")
@@ -321,23 +344,21 @@ class GlossaryConsistencyTest(unittest.TestCase):
         self.assertIn(("字节", "byte"), self.pairs)
 
     def test_chinese_copy_uses_glossary_english_counterpart(self):
-        problems = []
-        for label, entry in self.samples():
-            zh, en = entry["zh"], entry["en"]
-            # 长词先匹配并遮蔽，免得「位」这种短词命中「位域」内部
-            masked_zh, masked_en = zh, en.lower()
-            for zh_term, en_term in self.pairs:
-                if zh_term not in masked_zh:
-                    continue
-                masked_zh = masked_zh.replace(zh_term, "\0" * len(zh_term))
-                if en_term.lower() in masked_en:
-                    masked_en = masked_en.replace(en_term.lower(), "\0" * len(en_term))
-                else:
-                    problems.append(
-                        "%s: 中文用「%s」，英文应按术语表写「%s」，实际是 %r"
-                        % (label, zh_term, en_term, entry["en"])
-                    )
+        problems = glossary_problems(self.samples(), self.pairs)
         self.assertEqual(problems, [], "\n".join(problems))
+
+    def test_checker_still_catches_a_real_violation(self):
+        """遮蔽「单位」之后，术语检查不能被削弱成空转。"""
+        problems = glossary_problems(
+            [
+                ("probe:term", {"zh": "每个位的含义", "en": "the meaning of every field"}),
+                ("probe:ok", {"zh": "每个位的含义", "en": "the meaning of every bit"}),
+                ("probe:unit", {"zh": "单位 100 MBd", "en": "in units of 100 MBd"}),
+            ],
+            self.pairs,
+        )
+        self.assertEqual(len(problems), 1, problems)
+        self.assertIn("probe:term", problems[0])
 
     def samples(self):
         """界面文案 + 数据里的字段名/说明：AC4 管的是整站的英文，不只是 UI 词条。"""
@@ -350,6 +371,9 @@ class GlossaryConsistencyTest(unittest.TestCase):
                     items.append(
                         ("%s#%d.%s" % (where, byte["address"], field), byte[field])
                     )
+            # 表登记里的表名同样是读者可见的文案，术语要一起对齐。
+            for table in document.get("tables", []):
+                items.append(("%s#table-%s.title" % (where, table["number"]), table["title"]))
         return items
 
     def test_copy_avoids_terms_the_glossary_rejects(self):

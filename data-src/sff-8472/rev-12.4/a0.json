@@ -1,0 +1,860 @@
+{
+  "spec": "sff-8472",
+  "revision": "12.4",
+  "block": "a0",
+  "size": 128,
+  "note": {
+    "zh": "本站只收录 A0h 的字节 0-127。字节 128-255 为保留区（原分配给 SFF-8079），不在 v1 范围内。",
+    "en": "This site covers A0h bytes 0-127 only. Bytes 128-255 are reserved (originally allocated to SFF-8079) and out of scope for v1."
+  },
+  "sections": [
+    {
+      "start": 0,
+      "end": 63,
+      "name": {
+        "zh": "基本 ID 字段",
+        "en": "Base ID fields"
+      }
+    },
+    {
+      "start": 64,
+      "end": 95,
+      "name": {
+        "zh": "扩展 ID 字段",
+        "en": "Extended ID fields"
+      }
+    },
+    {
+      "start": 96,
+      "end": 127,
+      "name": {
+        "zh": "厂商特定 ID 字段",
+        "en": "Vendor specific ID fields"
+      }
+    }
+  ],
+  "checksums": [
+    {
+      "id": "cc-base",
+      "start": 0,
+      "end": 62,
+      "target": 63,
+      "algorithm": "sum-low8",
+      "name": {
+        "zh": "CC_BASE",
+        "en": "CC_BASE"
+      }
+    },
+    {
+      "id": "cc-ext",
+      "start": 64,
+      "end": 94,
+      "target": 95,
+      "algorithm": "sum-low8",
+      "name": {
+        "zh": "CC_EXT",
+        "en": "CC_EXT"
+      }
+    }
+  ],
+  "bytes": [
+    {
+      "address": 0,
+      "length": 1,
+      "name": {
+        "zh": "标识符",
+        "en": "Identifier"
+      },
+      "description": {
+        "zh": "收发器类型代码。取值见 SFF-8472 表 5-1。",
+        "en": "Transceiver type code; see SFF-8472 Table 5-1."
+      },
+      "tableRefs": [
+        "5-1"
+      ]
+    },
+    {
+      "address": 1,
+      "length": 1,
+      "name": {
+        "zh": "扩展标识符",
+        "en": "Extended identifier"
+      },
+      "description": {
+        "zh": "标识符的补充代码。取值见 SFF-8472 表 5-2。",
+        "en": "Supplementary code to the identifier; see SFF-8472 Table 5-2."
+      },
+      "tableRefs": [
+        "5-2"
+      ]
+    },
+    {
+      "address": 2,
+      "length": 1,
+      "name": {
+        "zh": "连接器",
+        "en": "Connector"
+      },
+      "description": {
+        "zh": "连接器类型代码。代码表在 SFF-8024，本站不复制该表。",
+        "en": "Connector type code. The code table lives in SFF-8024 and is not reproduced here."
+      }
+    },
+    {
+      "address": 3,
+      "length": 8,
+      "name": {
+        "zh": "收发器合规代码",
+        "en": "Transceiver compliance codes"
+      },
+      "description": {
+        "zh": "10 个字节的置位表示所符合的电气或光学标准。逐位含义见 SFF-8472 表 5-3。",
+        "en": "Set bits across ten bytes declare the electrical or optical standards complied with. Bit meanings are in SFF-8472 Table 5-3."
+      },
+      "tableRefs": [
+        "5-3",
+        "5-4"
+      ]
+    },
+    {
+      "address": 11,
+      "length": 1,
+      "name": {
+        "zh": "编码",
+        "en": "Encoding"
+      },
+      "description": {
+        "zh": "高速串行编码算法代码。代码表在 SFF-8024。",
+        "en": "High-speed serial encoding algorithm code. The code table lives in SFF-8024."
+      }
+    },
+    {
+      "address": 12,
+      "length": 1,
+      "name": {
+        "zh": "标称信号速率",
+        "en": "Signaling rate, nominal"
+      },
+      "description": {
+        "zh": "标称信号速率，单位 100 MBd。取值 FFh 时改由字节 66 与 67 以 250 MBd 为单位描述。",
+        "en": "Nominal signaling rate in units of 100 MBd. A value of FFh moves the definition to bytes 66 and 67 in units of 250 MBd."
+      }
+    },
+    {
+      "address": 13,
+      "length": 1,
+      "name": {
+        "zh": "速率标识符",
+        "en": "Rate identifier"
+      },
+      "description": {
+        "zh": "速率选择功能类型。取值见 SFF-8472 表 5-6。",
+        "en": "Rate select functionality type; see SFF-8472 Table 5-6."
+      },
+      "tableRefs": [
+        "5-6"
+      ]
+    },
+    {
+      "address": 14,
+      "length": 1,
+      "name": {
+        "zh": "单模链路长度（km）或铜缆衰减",
+        "en": "Length (SMF, km) or copper attenuation"
+      },
+      "description": {
+        "zh": "单模光纤支持的链路长度，单位 km；铜缆实现时为 12.9 GHz 下的衰减，单位 dB。",
+        "en": "Link length supported over single-mode fiber in km, or, for copper implementations, attenuation at 12.9 GHz in dB."
+      }
+    },
+    {
+      "address": 15,
+      "length": 1,
+      "name": {
+        "zh": "单模链路长度（100 m）或铜缆衰减",
+        "en": "Length (SMF, 100 m) or copper attenuation"
+      },
+      "description": {
+        "zh": "单模光纤支持的链路长度，单位 100 m；铜缆实现时为 25.78 GHz 下的衰减，单位 dB。",
+        "en": "Link length supported over single-mode fiber in units of 100 m, or, for copper implementations, attenuation at 25.78 GHz in dB."
+      }
+    },
+    {
+      "address": 16,
+      "length": 1,
+      "name": {
+        "zh": "多模链路长度（OM2）",
+        "en": "Length (OM2)"
+      },
+      "description": {
+        "zh": "50 µm OM2 光纤支持的链路长度，单位 10 m。",
+        "en": "Link length supported over 50 µm OM2 fiber in units of 10 m."
+      }
+    },
+    {
+      "address": 17,
+      "length": 1,
+      "name": {
+        "zh": "多模链路长度（OM1）",
+        "en": "Length (OM1)"
+      },
+      "description": {
+        "zh": "62.5 µm OM1 光纤支持的链路长度，单位 10 m。",
+        "en": "Link length supported over 62.5 µm OM1 fiber in units of 10 m."
+      }
+    },
+    {
+      "address": 18,
+      "length": 1,
+      "name": {
+        "zh": "多模链路长度（OM4）或铜缆长度",
+        "en": "Length (OM4) or copper"
+      },
+      "description": {
+        "zh": "50 µm OM4 光纤支持的链路长度，单位 10 m；铜缆或直连电缆实现时为长度，单位 m。",
+        "en": "Link length supported over 50 µm OM4 fiber in units of 10 m, or, for copper or direct-attach cable, length in m."
+      }
+    },
+    {
+      "address": 19,
+      "length": 1,
+      "name": {
+        "zh": "多模链路长度（OM3）或附加电缆长度",
+        "en": "Length (OM3) or additional cable length"
+      },
+      "description": {
+        "zh": "50 µm OM3 光纤支持的链路长度，单位 10 m；铜缆实现时为长度倍率，基值见 SFF-8472 表 6-1。",
+        "en": "Link length supported over 50 µm OM3 fiber in units of 10 m, or, for copper, a length multiplier whose base values are in SFF-8472 Table 6-1."
+      },
+      "tableRefs": [
+        "6-1"
+      ]
+    },
+    {
+      "address": 20,
+      "length": 16,
+      "name": {
+        "zh": "厂商名称",
+        "en": "Vendor name"
+      },
+      "description": {
+        "zh": "厂商名称，ASCII 字符，左对齐，右侧以空格（20h）填充。",
+        "en": "Vendor name in ASCII, left-aligned and padded on the right with spaces (20h)."
+      }
+    },
+    {
+      "address": 36,
+      "length": 1,
+      "name": {
+        "zh": "收发器合规代码（扩展字节）",
+        "en": "Transceiver compliance code (extension byte)"
+      },
+      "description": {
+        "zh": "补充的合规代码字节，逐位含义见 SFF-8472 表 5-3。",
+        "en": "Additional compliance code byte; bit meanings are in SFF-8472 Table 5-3."
+      },
+      "tableRefs": [
+        "5-3"
+      ]
+    },
+    {
+      "address": 37,
+      "length": 3,
+      "name": {
+        "zh": "厂商 OUI",
+        "en": "Vendor OUI"
+      },
+      "description": {
+        "zh": "厂商的 IEEE 公司 ID，3 个字节。",
+        "en": "The vendor's IEEE company ID, three bytes."
+      }
+    },
+    {
+      "address": 40,
+      "length": 16,
+      "name": {
+        "zh": "厂商料号",
+        "en": "Vendor part number"
+      },
+      "description": {
+        "zh": "厂商料号，ASCII 字符，左对齐，右侧以空格（20h）填充。",
+        "en": "Vendor part number in ASCII, left-aligned and padded on the right with spaces (20h)."
+      }
+    },
+    {
+      "address": 56,
+      "length": 4,
+      "name": {
+        "zh": "厂商版本",
+        "en": "Vendor revision"
+      },
+      "description": {
+        "zh": "厂商为该料号给出的版本级别，ASCII 字符。",
+        "en": "Revision level the vendor assigns to that part number, in ASCII."
+      }
+    },
+    {
+      "address": 60,
+      "length": 2,
+      "name": {
+        "zh": "波长或电缆合规代码",
+        "en": "Wavelength or cable compliance codes"
+      },
+      "description": {
+        "zh": "默认表示激光波长，单位 nm。当字节 8 的比特位 2（无源电缆）或比特位 3（有源电缆）置位时，字节 60 改为电缆合规标志位，字节 61 全保留；逐位含义见 SFF-8472 表 8-1、表 8-2。",
+        "en": "Laser wavelength in nm by default. When bit 2 (passive cable) or bit 3 (active cable) of byte 8 is set, byte 60 becomes cable compliance flags and byte 61 is entirely reserved; bit meanings are in SFF-8472 Tables 8-1 and 8-2."
+      },
+      "tableRefs": [
+        "8-1",
+        "8-2"
+      ]
+    },
+    {
+      "address": 62,
+      "length": 1,
+      "name": {
+        "zh": "光纤通道速率 2",
+        "en": "Fibre Channel speed 2"
+      },
+      "description": {
+        "zh": "收发器的光纤通道速率能力代码。",
+        "en": "Code describing the transceiver's Fibre Channel speed capability."
+      },
+      "tableRefs": [
+        "5-3"
+      ]
+    },
+    {
+      "address": 63,
+      "length": 1,
+      "name": {
+        "zh": "CC_BASE",
+        "en": "CC_BASE"
+      },
+      "description": {
+        "zh": "基本 ID 字段的校验和：字节 0 至 62 之和的低 8 位。",
+        "en": "Checksum over the base ID fields: the low 8 bits of the sum of bytes 0 through 62."
+      },
+      "checksumFor": "cc-base"
+    },
+    {
+      "address": 64,
+      "length": 1,
+      "name": {
+        "zh": "选项（字节 0）",
+        "en": "Options (byte 0)"
+      },
+      "description": {
+        "zh": "8 个单比特指示符，声明实现了哪些可选功能。逐位含义见 SFF-8472 表 8-3。",
+        "en": "Eight single-bit indicators declaring which optional features are implemented; see SFF-8472 Table 8-3."
+      },
+      "tableRefs": [
+        "8-3"
+      ],
+      "bits": [
+        {
+          "bit": 7,
+          "reserved": true,
+          "name": {
+            "zh": "保留",
+            "en": "Reserved"
+          },
+          "description": {
+            "zh": "保留，置 0。",
+            "en": "Reserved; set to 0."
+          }
+        },
+        {
+          "bit": 6,
+          "name": {
+            "zh": "高功率等级 4 声明",
+            "en": "High power level 4 declared"
+          },
+          "description": {
+            "zh": "置 0 表示按比特位 1 与比特位 5 指示标准功率等级 1、2、3；置 1 表示要求功率等级 4。最大功率在 A2h 字节 66 中声明。",
+            "en": "Set to 0 when bits 1 and 5 select the standard power levels 1, 2 and 3; set to 1 when power level 4 is required. Maximum power is declared in A2h byte 66."
+          }
+        },
+        {
+          "bit": 5,
+          "name": {
+            "zh": "高功率等级 3 声明",
+            "en": "High power level 3 declared"
+          },
+          "description": {
+            "zh": "置 0 表示按比特位 1 指示标准功率等级 1 与 2；置 1 表示要求功率等级 3 或功率等级 4。",
+            "en": "Set to 0 when bit 1 selects the standard power levels 1 and 2; set to 1 when power level 3 or power level 4 is required."
+          }
+        },
+        {
+          "bit": 4,
+          "name": {
+            "zh": "分页已实现",
+            "en": "Paging implemented"
+          },
+          "description": {
+            "zh": "置 1 表示实现了分页，A2h 字节 127 用作页选择。",
+            "en": "Set to 1 when paging is implemented; A2h byte 127 is then used for page select."
+          }
+        },
+        {
+          "bit": 3,
+          "name": {
+            "zh": "Retimer 或 CDR",
+            "en": "Retimer or CDR"
+          },
+          "description": {
+            "zh": "置 1 表示模块内带 retimer 或时钟数据恢复电路。",
+            "en": "Set to 1 when the module contains a retimer or clock and data recovery circuit."
+          }
+        },
+        {
+          "bit": 2,
+          "name": {
+            "zh": "制冷型激光器",
+            "en": "Cooled laser"
+          },
+          "description": {
+            "zh": "置 1 表示制冷型激光发射机实现；置 0 表示非制冷或未规定。",
+            "en": "Set to 1 for a cooled laser transmitter implementation, 0 for uncooled or unspecified."
+          }
+        },
+        {
+          "bit": 1,
+          "name": {
+            "zh": "功率等级 2 声明",
+            "en": "Power level 2 declared"
+          },
+          "description": {
+            "zh": "置 1 表示要求功率等级 2；置 0 表示功率等级 1 或未规定。",
+            "en": "Set to 1 when power level 2 is required, 0 for power level 1 or unspecified."
+          }
+        },
+        {
+          "bit": 0,
+          "name": {
+            "zh": "线性接收输出",
+            "en": "Linear receiver output"
+          },
+          "description": {
+            "zh": "置 1 表示线性接收输出；置 0 表示限幅、PAM4 或未规定的输出。",
+            "en": "Set to 1 for linear receiver output, 0 for limiting, PAM4 or unspecified output."
+          }
+        }
+      ]
+    },
+    {
+      "address": 65,
+      "length": 1,
+      "name": {
+        "zh": "选项（字节 1）",
+        "en": "Options (byte 1)"
+      },
+      "description": {
+        "zh": "8 个单比特指示符，声明实现了哪些可选功能。逐位含义见 SFF-8472 表 8-3。",
+        "en": "Eight single-bit indicators declaring which optional features are implemented; see SFF-8472 Table 8-3."
+      },
+      "tableRefs": [
+        "8-3"
+      ],
+      "bits": [
+        {
+          "bit": 7,
+          "name": {
+            "zh": "接收机判决阈值已实现",
+            "en": "RDT implemented"
+          },
+          "description": {
+            "zh": "置 1 表示实现了接收机判决阈值调节。",
+            "en": "Set to 1 when receiver decision threshold adjustment is implemented."
+          }
+        },
+        {
+          "bit": 6,
+          "name": {
+            "zh": "可调谐发射机",
+            "en": "Tunable transmitter"
+          },
+          "description": {
+            "zh": "置 1 表示波长或频率可按 SFF-8690 调谐。",
+            "en": "Set to 1 when wavelength or frequency is tunable per SFF-8690."
+          }
+        },
+        {
+          "bit": 5,
+          "name": {
+            "zh": "RATE_SELECT 已实现",
+            "en": "RATE_SELECT implemented"
+          },
+          "description": {
+            "zh": "置 1 表示实现了 RATE_SELECT 功能；功能类型见字节 13。",
+            "en": "Set to 1 when the RATE_SELECT function is implemented; the function type is in byte 13."
+          }
+        },
+        {
+          "bit": 4,
+          "name": {
+            "zh": "TX_DISABLE 已实现",
+            "en": "TX_DISABLE implemented"
+          },
+          "description": {
+            "zh": "置 1 表示可禁用高速串行输出。",
+            "en": "Set to 1 when the high-speed serial output can be disabled."
+          }
+        },
+        {
+          "bit": 3,
+          "name": {
+            "zh": "TX_FAULT 已实现",
+            "en": "TX_FAULT implemented"
+          },
+          "description": {
+            "zh": "置 1 表示实现了 TX_FAULT 信号（见 SFF-8419）。",
+            "en": "Set to 1 when the TX_FAULT signal is implemented (see SFF-8419)."
+          }
+        },
+        {
+          "bit": 2,
+          "name": {
+            "zh": "信号丢失（极性相反）",
+            "en": "Loss of signal, inverted polarity"
+          },
+          "description": {
+            "zh": "置 1 表示实现了信号丢失指示，极性与 SFP MSA 相反（常称 Signal Detect）。该行为会导致互操作异常，应避免。",
+            "en": "Set to 1 for a loss-of-signal indication with polarity inverted from the SFP MSA (often called Signal Detect). This behaviour causes interoperability problems and should be avoided."
+          }
+        },
+        {
+          "bit": 1,
+          "name": {
+            "zh": "信号丢失（Rx_LOS）",
+            "en": "Loss of signal (Rx_LOS)"
+          },
+          "description": {
+            "zh": "置 1 表示实现了按 SFF-8419 定义的信号丢失指示。",
+            "en": "Set to 1 for a loss-of-signal indication defined per SFF-8419."
+          }
+        },
+        {
+          "bit": 0,
+          "reserved": true,
+          "name": {
+            "zh": "保留",
+            "en": "Reserved"
+          },
+          "description": {
+            "zh": "保留，置 0。",
+            "en": "Reserved; set to 0."
+          }
+        }
+      ]
+    },
+    {
+      "address": 66,
+      "length": 1,
+      "name": {
+        "zh": "最大信号速率",
+        "en": "Signaling rate, max"
+      },
+      "description": {
+        "zh": "字节 12 不为 FFh 时，表示仍满足规格的速率上限，单位为高于标称速率的百分之一；字节 12 为 FFh 时，以 250 MBd 为单位给出标称速率。取值 00h 表示该字段未使用。",
+        "en": "When byte 12 is not FFh, the upper rate bound still meeting specification, in units of one percent above nominal; when byte 12 is FFh, the nominal rate in units of 250 MBd. A value of 00h means the field is unused."
+      }
+    },
+    {
+      "address": 67,
+      "length": 1,
+      "name": {
+        "zh": "最小信号速率",
+        "en": "Signaling rate, min"
+      },
+      "description": {
+        "zh": "字节 12 不为 FFh 时，表示仍满足规格的速率下限，单位为低于标称速率的百分之一；字节 12 为 FFh 时，表示标称速率 ±1% 的范围限制。取值为 0 表示该字段未使用。",
+        "en": "When byte 12 is not FFh, the lower rate bound still meeting specification, in units of one percent below nominal; when byte 12 is FFh, a rate window of ±1 percent around nominal. A value of 0 means the field is unused."
+      }
+    },
+    {
+      "address": 68,
+      "length": 16,
+      "name": {
+        "zh": "厂商序列号",
+        "en": "Vendor serial number"
+      },
+      "description": {
+        "zh": "厂商分配的序列号，ASCII 字符，左对齐，右侧以空格（20h）填充；16 字节全零表示未规定序列号。",
+        "en": "Vendor-assigned serial number in ASCII, left-aligned and padded on the right with spaces (20h); all sixteen bytes zero means no serial number is specified."
+      }
+    },
+    {
+      "address": 84,
+      "length": 8,
+      "name": {
+        "zh": "日期代码",
+        "en": "Date code"
+      },
+      "description": {
+        "zh": "8 个 ASCII 字符：字节 84-85 年份的低两位（00 表示 2000 年），86-87 月份，88-89 月内日期，90-91 厂商批次。日期代码为必填。",
+        "en": "Eight ASCII characters: bytes 84-85 the last two digits of the year (00 meaning 2000), 86-87 the month, 88-89 the day of month, 90-91 a vendor lot code. The date code is mandatory."
+      },
+      "tableRefs": [
+        "8-4"
+      ]
+    },
+    {
+      "address": 92,
+      "length": 1,
+      "name": {
+        "zh": "诊断监测类型",
+        "en": "Diagnostic monitoring type"
+      },
+      "description": {
+        "zh": "8 个单比特指示符，说明诊断监测的实现方式。逐位含义见 SFF-8472 表 8-5。",
+        "en": "Eight single-bit indicators describing how diagnostic monitoring is implemented; see SFF-8472 Table 8-5."
+      },
+      "tableRefs": [
+        "8-5"
+      ],
+      "bits": [
+        {
+          "bit": 7,
+          "reserved": true,
+          "name": {
+            "zh": "保留（遗留诊断）",
+            "en": "Reserved (legacy diagnostics)"
+          },
+          "description": {
+            "zh": "为遗留诊断实现保留；符合本规范时必须为 0。",
+            "en": "Reserved for legacy diagnostic implementations; must be 0 to comply with this specification."
+          }
+        },
+        {
+          "bit": 6,
+          "name": {
+            "zh": "已实现数字诊断监测",
+            "en": "Digital diagnostic monitoring implemented"
+          },
+          "description": {
+            "zh": "置 1 表示按本规范实现了数字诊断监测；此时必须同时实现五项监测并写入告警与警告阈值。",
+            "en": "Set to 1 when digital diagnostic monitoring is implemented per this specification; the five monitored quantities and the alarm and warning thresholds are then mandatory."
+          }
+        },
+        {
+          "bit": 5,
+          "name": {
+            "zh": "内部校准",
+            "en": "Internally calibrated"
+          },
+          "description": {
+            "zh": "置 1 表示直接以物理单位报告已校准的值。",
+            "en": "Set to 1 when calibrated values are reported directly in physical units."
+          }
+        },
+        {
+          "bit": 4,
+          "name": {
+            "zh": "外部校准",
+            "en": "Externally calibrated"
+          },
+          "description": {
+            "zh": "置 1 表示报告的是 A/D 计数值，须用 A2h 字节 56-95 的校准常数换算。",
+            "en": "Set to 1 when raw A/D counts are reported and must be converted with the calibration constants in A2h bytes 56-95."
+          }
+        },
+        {
+          "bit": 3,
+          "name": {
+            "zh": "接收光功率测量类型",
+            "en": "Received optical power measurement type"
+          },
+          "description": {
+            "zh": "置 1 表示监测平均功率，置 0 表示监测 OMA。",
+            "en": "Set to 1 to monitor average power, 0 to monitor OMA."
+          }
+        },
+        {
+          "bit": 2,
+          "name": {
+            "zh": "需要地址切换",
+            "en": "Address change required"
+          },
+          "description": {
+            "zh": "置 1 表示访问 A2h 前必须先执行地址切换序列。",
+            "en": "Set to 1 when the address change sequence must be performed before accessing A2h."
+          }
+        },
+        {
+          "bit": 1,
+          "reserved": true,
+          "name": {
+            "zh": "保留",
+            "en": "Reserved"
+          },
+          "description": {
+            "zh": "保留，置 0。",
+            "en": "Reserved; set to 0."
+          }
+        },
+        {
+          "bit": 0,
+          "reserved": true,
+          "name": {
+            "zh": "保留",
+            "en": "Reserved"
+          },
+          "description": {
+            "zh": "保留，置 0。",
+            "en": "Reserved; set to 0."
+          }
+        }
+      ]
+    },
+    {
+      "address": 93,
+      "length": 1,
+      "name": {
+        "zh": "增强选项",
+        "en": "Enhanced options"
+      },
+      "description": {
+        "zh": "8 个单比特指示符，声明实现了哪些可选诊断增强特性。逐位含义见 SFF-8472 表 8-6。",
+        "en": "Eight single-bit indicators declaring which optional enhanced diagnostic features are implemented; see SFF-8472 Table 8-6."
+      },
+      "tableRefs": [
+        "8-6"
+      ],
+      "bits": [
+        {
+          "bit": 7,
+          "name": {
+            "zh": "告警/警告标志",
+            "en": "Alarm and warning flags"
+          },
+          "description": {
+            "zh": "置 1 表示全部监测量都实现了可选告警与警告标志。",
+            "en": "Set to 1 when optional alarm and warning flags exist for every monitored quantity."
+          }
+        },
+        {
+          "bit": 6,
+          "name": {
+            "zh": "软 TX_DISABLE",
+            "en": "Soft TX_DISABLE"
+          },
+          "description": {
+            "zh": "置 1 表示实现了可通过寄存器控制的 TX_DISABLE 与状态监测。",
+            "en": "Set to 1 when TX_DISABLE control and monitoring are available through registers."
+          }
+        },
+        {
+          "bit": 5,
+          "name": {
+            "zh": "软 TX_FAULT",
+            "en": "Soft TX_FAULT"
+          },
+          "description": {
+            "zh": "置 1 表示实现了 TX_FAULT 的寄存器状态监测。",
+            "en": "Set to 1 when TX_FAULT status is monitored through a register."
+          }
+        },
+        {
+          "bit": 4,
+          "name": {
+            "zh": "软 RX_LOS",
+            "en": "Soft RX_LOS"
+          },
+          "description": {
+            "zh": "置 1 表示实现了 RX_LOS 的寄存器状态监测。",
+            "en": "Set to 1 when RX_LOS status is monitored through a register."
+          }
+        },
+        {
+          "bit": 3,
+          "name": {
+            "zh": "软 RATE_SELECT",
+            "en": "Soft RATE_SELECT"
+          },
+          "description": {
+            "zh": "置 1 表示实现了可通过寄存器控制的 RATE_SELECT 与状态监测。",
+            "en": "Set to 1 when RATE_SELECT control and monitoring are available through registers."
+          }
+        },
+        {
+          "bit": 2,
+          "name": {
+            "zh": "应用选择（SFF-8079）",
+            "en": "Application select (SFF-8079)"
+          },
+          "description": {
+            "zh": "置 1 表示按 SFF-8079 实现了应用选择控制。",
+            "en": "Set to 1 when application select control is implemented per SFF-8079."
+          }
+        },
+        {
+          "bit": 1,
+          "name": {
+            "zh": "软速率选择（SFF-8431）",
+            "en": "Soft rate select (SFF-8431)"
+          },
+          "description": {
+            "zh": "置 1 表示按 SFF-8431 实现了软速率选择控制。",
+            "en": "Set to 1 when soft rate select control is implemented per SFF-8431."
+          }
+        },
+        {
+          "bit": 0,
+          "reserved": true,
+          "name": {
+            "zh": "保留",
+            "en": "Reserved"
+          },
+          "description": {
+            "zh": "保留，置 0。",
+            "en": "Reserved; set to 0."
+          }
+        }
+      ]
+    },
+    {
+      "address": 94,
+      "length": 1,
+      "name": {
+        "zh": "SFF-8472 合规版本",
+        "en": "SFF-8472 compliance"
+      },
+      "description": {
+        "zh": "无符号整数，表示所实现的特性集版本；09h 表示符合 12.4 版，0Ah 及以上保留。取值见 SFF-8472 表 8-8。",
+        "en": "An unsigned integer naming the feature set implemented; 09h means revision 12.4, and 0Ah and above are reserved. See SFF-8472 Table 8-8."
+      },
+      "tableRefs": [
+        "8-8"
+      ]
+    },
+    {
+      "address": 95,
+      "length": 1,
+      "name": {
+        "zh": "CC_EXT",
+        "en": "CC_EXT"
+      },
+      "description": {
+        "zh": "扩展 ID 字段的校验和：字节 64 至 94 之和的低 8 位。",
+        "en": "Checksum over the extended ID fields: the low 8 bits of the sum of bytes 64 through 94."
+      },
+      "checksumFor": "cc-ext"
+    },
+    {
+      "address": 96,
+      "length": 32,
+      "name": {
+        "zh": "厂商特定",
+        "en": "Vendor specific"
+      },
+      "description": {
+        "zh": "厂商自由使用的 32 字节 EEPROM 区。",
+        "en": "Thirty-two bytes of vendor-specific EEPROM."
+      }
+    }
+  ],
+  "handEdited": true,
+  "handEditNote": "字段定义按 SFF-8472 Rev 12.4 正文手工整理（地址、位号、取值），说明文字为本项目自写，不复制译文。data/ 下的同名文件由 tools/build_data.py 从本目录重新生成。"
+}

@@ -1,3 +1,6 @@
+# agent 工作树（各票的隔离 checkout，含各自的 dist/ 与 .tmp/）
+.agents/
+
 # generated / dependencies
 dist/
 dist-probe*/

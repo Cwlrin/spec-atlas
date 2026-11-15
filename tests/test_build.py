@@ -7,13 +7,16 @@
 
 import hashlib
 import json
+import re
 import shutil
-import subprocess
 import sys
 import unittest
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+from support import build, run  # noqa: E402
 DATA_FILE = ROOT / "data" / "sff-8472" / "rev-12.4" / "a0.json"
 PROBE_DATA = ROOT / "tests" / "fixtures" / "probe-data"
 BAD_DATA = ROOT / "tests" / "fixtures" / "bad-data"
@@ -23,27 +26,6 @@ PROBE_ABORT = ROOT / "dist-probe-abort"
 DIST = ROOT / "dist"
 BYTE_PAGE = DIST / "sff-8472" / "12.4" / "a0" / "0.html"
 INDEX_PAGE = DIST / "sff-8472" / "12.4" / "a0" / "index.html"
-
-
-def run(args):
-    return subprocess.run(
-        [sys.executable] + args,
-        cwd=str(ROOT),
-        capture_output=True,
-        text=True,
-        encoding="utf-8",
-        errors="replace",
-    )
-
-
-def build(*extra):
-    result = run(["tools/build.py"] + list(extra))
-    if result.returncode != 0:
-        raise AssertionError(
-            "build failed (%s)\nstdout:\n%s\nstderr:\n%s"
-            % (result.returncode, result.stdout, result.stderr)
-        )
-    return result
 
 
 def snapshot(dist):
@@ -71,7 +53,7 @@ class BuildArtifactTest(unittest.TestCase):
         shutil.rmtree(PROBE_ABORT, ignore_errors=True)
 
     def test_data_json_passes_schema(self):
-        result = run(["tools/validate.py"])
+        result = run("tools/validate.py")
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
 
     def test_byte_page_exists(self):
@@ -99,13 +81,18 @@ class BuildArtifactTest(unittest.TestCase):
         html = BYTE_PAGE.read_text(encoding="utf-8")
         self.assertIn('href="index.html"', html)
 
-    def test_index_marks_uncollected_bytes_as_pending(self):
+    def test_index_links_each_field_start_and_no_link_is_dead(self):
+        """索引按字段列一行、链到字段首地址；多字节字段内部的地址靠字段页内跳转，
+        不各占一行。但凡是链出去的，目标页面必须真的存在。"""
         html = INDEX_PAGE.read_text(encoding="utf-8")
-        self.assertIn("待补", html)
-        # 只有已收录的字节 0 有链接；其余字节不得产生链接
-        self.assertIn('href="0.html"', html)
-        for address in (1, 2, 127):
-            self.assertNotIn('href="%d.html"' % address, html)
+        for start in (0, 1, 2, 3, 96):
+            self.assertIn('href="%d.html"' % start, html, "字段首地址 %d 没有链接" % (start,))
+        # 多字节字段内的地址也要能直达，但仍在同一个字段行里
+        self.assertIn('href="25.html"', html)
+        for href in re.findall(r'href="(\d+\.html)"', html):
+            self.assertTrue(
+                (INDEX_PAGE.parent / href).is_file(), "索引里的 %s 没有对应页面" % (href,)
+            )
 
     def test_build_is_repeatable(self):
         self.assertEqual(self.first.returncode, 0)
@@ -144,21 +131,21 @@ class BuildArtifactTest(unittest.TestCase):
 
     def test_build_aborts_on_invalid_data(self):
         shutil.rmtree(PROBE_ABORT, ignore_errors=True)
-        result = run(["tools/build.py", "--data", str(BAD_DATA), "--dist", str(PROBE_ABORT)])
+        result = run("tools/build.py", "--data", str(BAD_DATA), "--dist", str(PROBE_ABORT))
         self.assertNotEqual(result.returncode, 0, "数据不合法时构建必须失败")
         self.assertFalse(
             (PROBE_ABORT / "sff-8472").exists(), "数据不合法时不得产出页面"
         )
 
     def test_unsupported_schema_keyword_is_an_error(self):
-        result = run(["tools/validate.py", "--schema", str(BAD_SCHEMA)])
+        result = run("tools/validate.py", "--schema", str(BAD_SCHEMA))
         output = result.stdout + result.stderr
         self.assertNotEqual(result.returncode, 0, "schema 里未实现的关键字必须报错")
         self.assertIn("minPropertiesX", output)
         self.assertIn("未实现的关键字", output)
 
     def test_invalid_data_fails_validation(self):
-        result = run(["tools/validate.py", "--data", str(BAD_DATA)])
+        result = run("tools/validate.py", "--data", str(BAD_DATA))
         output = result.stdout + result.stderr
         self.assertNotEqual(result.returncode, 0, "缺字段的数据应当校验失败")
         self.assertIn("description", output)
