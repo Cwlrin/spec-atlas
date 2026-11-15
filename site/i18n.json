@@ -1,0 +1,82 @@
+{
+  "nav.index": {
+    "zh": "{spec} Rev {revision} · {block} 索引",
+    "en": "{spec} Rev {revision} · {block} index"
+  },
+  "index.title": {
+    "zh": "{spec} Rev {revision} · {block} 索引",
+    "en": "{spec} Rev {revision} · {block} index"
+  },
+  "index.h1": {
+    "zh": "{spec} Rev {revision} · {block} 寄存器映射",
+    "en": "{spec} Rev {revision} · {block} register map"
+  },
+  "index.lede": {
+    "zh": "已收录 {collected} / {size} 个字节。标为「待补」的字节表示本站尚未收录，<strong>不代表该字节不存在</strong>。",
+    "en": "Collected {collected} / {size} bytes. A byte marked “pending” has not been collected here yet; <strong>its absence does not mean the byte does not exist</strong>."
+  },
+  "index.col.address": {
+    "zh": "地址",
+    "en": "Address"
+  },
+  "index.col.name": {
+    "zh": "名称",
+    "en": "Name"
+  },
+  "index.col.description": {
+    "zh": "说明",
+    "en": "Description"
+  },
+  "index.pending": {
+    "zh": "待补",
+    "en": "pending"
+  },
+  "byte.title": {
+    "zh": "{name_zh} — {spec} Rev {revision} · {block} 字节 {address}",
+    "en": "{name_en} — {spec} Rev {revision} · {block} byte {address}"
+  },
+  "byte.position": {
+    "zh": "（{block} 字节 {address}）",
+    "en": "(byte {address} of {block})"
+  },
+  "label.address": {
+    "zh": "地址",
+    "en": "Address"
+  },
+  "label.length": {
+    "zh": "字节数",
+    "en": "Bytes"
+  },
+  "label.name": {
+    "zh": "名称",
+    "en": "Name"
+  },
+  "label.description": {
+    "zh": "说明",
+    "en": "Description"
+  },
+  "footer.spec": {
+    "zh": "{spec} Rev {revision} · {block}",
+    "en": "{spec} Rev {revision} · {block}"
+  },
+  "footer.disclaimer": {
+    "zh": "本站为非官方文档站，内容版权归 SNIA 所有；中文译文仅供参考，如有出入以英文原文为准。",
+    "en": "This is an unofficial site. Content is copyright SNIA; Chinese translations are for reference only, and the English original prevails."
+  },
+  "lang.label": {
+    "zh": "语言",
+    "en": "Language"
+  },
+  "lang.zh": {
+    "zh": "中文",
+    "en": "中文"
+  },
+  "lang.en": {
+    "zh": "English",
+    "en": "English"
+  },
+  "byte.length_unit": {
+    "zh": "字节",
+    "en": "byte"
+  }
+}

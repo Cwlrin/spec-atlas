@@ -1,0 +1,6 @@
+<!-- 切换器的可及名写成两种语言：这个控件本身就是给两种语言的读者用的，
+     aria-label 只有一个值，只能一条写全，不能拆成两版。 -->
+<div class="lang-switch" role="group" aria-label="Language / 语言">
+  <button type="button" data-lang-set="zh" aria-pressed="{{pressed_zh}}">{{bi_plain:lang.zh}}</button>
+  <button type="button" data-lang-set="en" aria-pressed="{{pressed_en}}">{{bi_plain:lang.en}}</button>
+</div>

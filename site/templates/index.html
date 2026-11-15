@@ -1,37 +1,33 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-lang="{{default_lang}}" data-title-zh="{{title_zh:attr}}" data-title-en="{{title_en:attr}}">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{{spec_label}} Rev {{revision}} · {{block_label}} 索引</title>
+<title>{{title_zh}}</title>
 <link rel="stylesheet" href="{{style_href}}">
+<!-- 同步加载：在首次绘制之前就把语言定下来，免得英文读者看到一闪而过的中文。 -->
+<script src="{{lang_href}}"></script>
 </head>
 <body>
 <header class="site-header">
-  <nav class="crumbs">{{spec_label}} Rev {{revision}} · {{block_label}}</nav>
+  <nav class="crumbs">{{bi:index.title}}</nav>
+  {{lang_switch:raw}}
 </header>
 <main class="page">
-  <h1>{{spec_label}} Rev {{revision}} · {{block_label}} 寄存器映射</h1>
-  <p class="lede">
-    已收录 {{collected_count}} / {{size}} 个字节。标为「待补」的字节表示本站尚未收录，
-    <strong>不代表该字节不存在</strong>。
-  </p>
+  <h1>{{bi:index.h1}}</h1>
+  <p class="lede">{{bi:index.lede}}</p>
   <table class="byte-table">
     <thead>
-      <tr><th>地址</th><th>名称</th><th>English</th><th>说明</th></tr>
+      <tr><th>{{bi:index.col.address}}</th><th>{{bi:index.col.name}}</th><th>{{bi:index.col.description}}</th></tr>
     </thead>
     <tbody>
-      {{rows}}
+      {{rows:raw}}
     </tbody>
   </table>
 </main>
 <footer class="site-footer">
-  <p>{{spec_label}} Rev {{revision}} · {{block_label}}</p>
-  <p class="disclaimer">
-    本站为非官方文档站，内容版权归 SNIA 所有；中文译文仅供参考，如有出入以英文原文为准。
-    <span lang="en">This is an unofficial site. Content is copyright SNIA; Chinese translations
-    are for reference only, and the English original prevails.</span>
-  </p>
+  <p>{{bi:footer.spec}}</p>
+  <p class="disclaimer">{{bi:footer.disclaimer}}</p>
 </footer>
 </body>
 </html>
