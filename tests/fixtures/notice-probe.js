@@ -56,16 +56,12 @@ function makeDom(stored) {
   /* 与模板一致：提示条默认带 hidden，由脚本决定是否揭开。 */
   const dismiss = makeElement({ "data-notice-dismiss": "" });
   const notice = makeElement({ "data-first-visit-notice": "", hidden: "" });
-  /* 关闭按钮必须在提示条内部：拖到外面就不是「关这条提示」了。 */
-  const parents = new Map([[dismiss, notice]]);
   /* 真 DOM 里元素自己也有 querySelectorAll：关闭按钮是在提示条内部找的。 */
   notice.querySelectorAll = (selector) =>
     selector === "[data-notice-dismiss]" ? [dismiss] : [];
-  dismiss.querySelectorAll = (selector) => (parents.get(dismiss) === notice ? [] : []);
 
   const document = {
     readyState: "complete",
-    documentElement: makeElement({ "data-lang": "zh" }),
     addEventListener(type, handler) {
       (listeners[type] = listeners[type] || []).push(handler);
     },
@@ -80,10 +76,6 @@ function makeDom(stored) {
     }
   };
   const listeners = {};
-  document.parentElement = (node) => parents.get(node) || null;
-  document.removeChild = (node) => {
-    node.removed = true;
-  };
 
   const storage = makeStorage(stored);
   const window = { localStorage: storage, document };

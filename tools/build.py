@@ -33,10 +33,6 @@ COPY_FILE = "i18n.json"
 LANGS = ("zh", "en")
 DEFAULT_LANG = "zh"
 
-# 站点目前只呈现一个协议；首页标题里的协议名从 data/ 推出来，
-# 不在代码里另写一份（写两份迟早对不上）。
-HOME_SPEC_FALLBACK = "spec-atlas"
-
 # 原样拷进产物的静态资源：页面只按相对路径引用它们。
 ASSETS = ("style.css", "lang.js", "notice.js")
 
@@ -352,7 +348,11 @@ def render_home(template, entries, blocks, switch_template, notice):
     首页不依赖任何单个寄存器映射，所以先渲染它；映射清单来自 data/，
     收录了哪些就列哪些，不在这里写死。
     """
-    spec = blocks[0][0] if blocks else HOME_SPEC_FALLBACK
+    # 协议名从 data/ 推出来，不在代码里另写一份（写两份迟早对不上）。
+    # 没有数据就没有首页可渲染：校验阶段已经拦下，这里只兜住不变量。
+    if not blocks:
+        fail("没有任何寄存器映射，首页无从渲染")
+    spec = blocks[0][0]
     values = {
         "default_lang": DEFAULT_LANG,
         "spec": spec.upper(),
