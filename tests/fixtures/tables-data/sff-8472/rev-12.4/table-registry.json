@@ -1,0 +1,63 @@
+{
+  "spec": "sff-8472",
+  "revision": "12.4",
+  "handEdited": true,
+  "handEditNote": "测试固定数据：一份同时含 generated、collected 与 pending 的表登记，用来断言摘要按三态分别计数。",
+  "tables": [
+    {
+      "number": "5-1",
+      "section": "5.1",
+      "title": {
+        "zh": "测试生成表",
+        "en": "Fixture generated table"
+      },
+      "status": "generated",
+      "generatedFrom": "a0"
+    },
+    {
+      "number": "5-2",
+      "section": "5.2",
+      "title": {
+        "zh": "测试收录表甲",
+        "en": "Fixture collected table A"
+      },
+      "status": "collected"
+    },
+    {
+      "number": "5-3",
+      "section": "5.3",
+      "title": {
+        "zh": "测试收录表乙",
+        "en": "Fixture collected table B"
+      },
+      "status": "collected"
+    },
+    {
+      "number": "5-4",
+      "section": "5.4",
+      "title": {
+        "zh": "测试待补表甲",
+        "en": "Fixture pending table A"
+      },
+      "status": "pending"
+    },
+    {
+      "number": "5-5",
+      "section": "5.5",
+      "title": {
+        "zh": "测试待补表乙",
+        "en": "Fixture pending table B"
+      },
+      "status": "pending"
+    },
+    {
+      "number": "5-6",
+      "section": "5.6",
+      "title": {
+        "zh": "测试待补表丙",
+        "en": "Fixture pending table C"
+      },
+      "status": "pending"
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "spec": "sff-8472",
+  "revision": "12.4",
+  "block": "a0",
+  "size": 1,
+  "handEdited": true,
+  "handEditNote": "测试固定数据：只为让表格清单页有得可渲染，内容不描述真实寄存器。",
+  "bytes": [
+    {
+      "address": 0,
+      "length": 1,
+      "reserved": true,
+      "name": {
+        "zh": "保留",
+        "en": "Reserved"
+      },
+      "description": {
+        "zh": "测试固定数据里的保留字节。",
+        "en": "Reserved byte in the test fixture."
+      }
+    }
+  ]
+}

@@ -104,8 +104,8 @@
     "en": "{spec} Rev {revision} · table index"
   },
   "tables.lede": {
-    "zh": "规范正文中共 {total} 张表，已结构化 {structured} 张。标为「待补」的表表示本站尚未收录，<strong>不代表该表不存在</strong>；未收录的表不提供链接。",
-    "en": "{total} tables appear in this revision; {structured} have been structured so far. A table marked “pending” has not been collected here yet; <strong>its absence does not mean the table does not exist</strong>, and pending tables are never linked."
+    "zh": "规范正文中共 {total} 张表：{generated} 张由寄存器数据生成，{collected} 张已收录，{pending} 张待补。标为「待补」的表表示本站尚未收录，<strong>不代表该表不存在</strong>；待补的表不提供链接。",
+    "en": "{total} tables appear in this revision: {generated} generated from register data, {collected} collected, {pending} pending. A table marked “pending” has not been collected here yet; <strong>its absence does not mean the table does not exist</strong>, and pending tables are never linked."
   },
   "tables.col.number": {
     "zh": "表号",

@@ -22,6 +22,9 @@
 | 保留区 | reserved | 规范正文 Reserved | 站点上显式列出并说明「未定义含义」，不省略 |
 | 校验和 | checksum | 规范正文 CC_BASE / CC_EXT | 求和区间与目标字节写在数据里；失败信息必须带地址 |
 | 表登记 | table registry | 本项目术语 | 某修订版正文中出现的全部表格及其收录状态 |
+| 由寄存器数据生成（表） | generated (table) | 本项目术语 | 内容由本站寄存器数据渲染，无需另存表文件；见 `status: generated` |
+| 已收录（表） | collected (table) | 本项目术语 | 本站已整理成表文件、可直接阅读；见 `status: collected` |
+| 待补（表） | pending (table) | 本项目术语 | 规范正文有、本站尚未收录，标「待补」且不给链接；见 `status: pending` |
 
 ## 措辞约定
 - 「告警」与「警告」不混用；统称写「告警/警告阈值」。

@@ -559,6 +559,43 @@ def copy_with(values):
     return dict(values)
 
 
+# 一张表的状态是三种不同的事实，不能折算成一个数：generated 的内容由寄存器
+# 数据渲染，collected 已收录成表文件，pending 尚未收录。摘要分别陈述，
+# 数字与行的 class 都从同一个 status 派生，三项之和恒等于总数。
+#
+# 状态 -> 状态列的文案键。这里是代码侧唯一一份状态清单：计数、校验、行的
+# class 都从它派生；再加一种状态要改它和 schema，别处不必知道有哪些状态。
+STATUS_COPY = {
+    "generated": "tables.status.generated",
+    "collected": "tables.status.collected",
+    # 「待补」是站点通用标签（索引页的未收录字段也用它），不是表页专属词。
+    "pending": "index.pending",
+}
+TABLE_STATUSES = tuple(STATUS_COPY)
+
+
+def table_status(table):
+    """读一张表的状态：未知值在构建期失败，不给「静默当成别的状态」留后路。
+
+    摘要数字、行的 class、状态列都从这里取，三处不可能是三个说法。
+    """
+    status = table.get("status")
+    if status not in STATUS_COPY:
+        fail(
+            "表 %r 的状态 %r 不在 %s 之内"
+            % (table.get("number"), status, TABLE_STATUSES)
+        )
+    return status
+
+
+def table_counts(tables):
+    """按状态计数：三项之和恒等于表数，不会漏掉哪一类。"""
+    counts = dict.fromkeys(TABLE_STATUSES, 0)
+    for table in tables:
+        counts[table_status(table)] += 1
+    return counts
+
+
 class TablesPage(SitePage):
     """一个修订版的表格清单页：每张表一行，未收录的标「待补」且不给链接。"""
 
@@ -566,38 +603,38 @@ class TablesPage(SitePage):
         super().__init__(entries, spec, revision, depth)
         self.registry = registry
         tables = registry.get("tables", [])
+        counts = table_counts(tables)
         self.values.update(
             {
                 "block": "",
                 "size": 0,
-                # 与文案一致：structured = 已结构化的表数（pending 与 generated 都不算）。
-                "structured": sum(1 for table in tables if table.get("status") == "collected"),
                 "total": len(tables),
+                "generated": counts["generated"],
+                "collected": counts["collected"],
+                "pending": counts["pending"],
             }
         )
         self.copy = Copy(entries, self.values)
 
     def rows(self):
+        """一行一张表：行的 class 就是它的状态，和摘要数字同出一源。
+
+        行 class 与状态列都从 status 派生，读者看到的、样式认得的、
+        摘要数出来的，三者不会是三个说法。
+        """
         rows = []
-        pending = bilingual(*self.copy.pair("index.pending"))
         for table in self.registry.get("tables", []):
-            status = table.get("status")
-            if status == "collected":
-                cell = bilingual(*self.copy.pair("tables.status.collected"))
-            elif status == "generated":
-                cell = bilingual(*self.copy.pair("tables.status.generated"))
-            else:
-                cell = pending
+            status = table_status(table)
             rows.append(
                 '<tr class="%s"><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>'
                 % (
-                    "pending" if status == "pending" else "collected",
+                    status,
                     bilingual(
                         *self.copy.with_values(number=table["number"]).pair("byte.table_ref")
                     ),
                     escape_data(table["section"]),
                     bilingual(*byte_pair(table["title"])),
-                    cell,
+                    bilingual(*self.copy.pair(STATUS_COPY[status])),
                 )
             )
         return "\n      ".join(rows)
