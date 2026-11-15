@@ -29,7 +29,14 @@
 
 ## 创建状态
 
-**尚未创建**：本机没有 `gh`，无法调用 GitHub API。安装并登录 `gh` 后执行：
+**已创建（2026-11-15）**：gh 2.104.0，账号 `Cwlrin`，仓库 `Cwlrin/spec-atlas`。
+下方命令保留，用于换仓库或标签丢失时重建。
+
+> 注意：本机直连 GitHub API 不通，`gh` 调用需带代理：
+> `export HTTPS_PROXY=http://127.0.0.1:7890 HTTP_PROXY=http://127.0.0.1:7890 ALL_PROXY=http://127.0.0.1:7890`
+> `git push` 走 SSH，不需要代理。
+
+命令清单：
 
 ```bash
 gh label create needs-triage    --color FBCA04 --description "需要维护者评估"

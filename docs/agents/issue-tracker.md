@@ -27,6 +27,16 @@
 
 关闭（默认）。triae 队列只处理 issue；需要把外部 PR 纳入 triage 时再改本节。
 
+## 网络
+
+本机直连 GitHub API 不通，`gh` 调用需带代理（2026-11-15 实测）：
+
+```bash
+export HTTPS_PROXY=http://127.0.0.1:7890 HTTP_PROXY=http://127.0.0.1:7890 ALL_PROXY=http://127.0.0.1:7890
+```
+
+`git push` 走 SSH，不需要代理。
+
 ## 前置检查
 
 在本目录执行 `gh repo view --json nameWithOwner` 应打印 `Cwlrin/spec-atlas`。
