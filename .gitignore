@@ -1,6 +1,8 @@
 # generated / dependencies
 dist/
 dist-probe*/
+# 测试与沙箱探测残留（本机 ACL 下删不掉，也不该入库）
+.tmp/
 node_modules/
 __pycache__/
 *.pyc
