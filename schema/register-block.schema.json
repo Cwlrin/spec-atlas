@@ -1,0 +1,44 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://spec-atlas.local/schema/register-block.schema.json",
+  "title": "寄存器块数据（revision -> block -> byte）",
+  "type": "object",
+  "required": ["spec", "revision", "block", "size", "bytes"],
+  "additionalProperties": false,
+  "properties": {
+    "spec": { "type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$" },
+    "revision": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+$" },
+    "block": { "type": "string", "enum": ["a0", "a2"] },
+    "size": { "type": "integer", "minimum": 1, "maximum": 256 },
+    "handEdited": { "type": "boolean" },
+    "handEditNote": { "type": "string", "minLength": 1 },
+    "bytes": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/definitions/byte" }
+    }
+  },
+  "definitions": {
+    "i18n": {
+      "type": "object",
+      "required": ["zh", "en"],
+      "additionalProperties": false,
+      "properties": {
+        "zh": { "type": "string", "minLength": 1 },
+        "en": { "type": "string", "minLength": 1 }
+      }
+    },
+    "byte": {
+      "type": "object",
+      "required": ["address", "name", "description"],
+      "additionalProperties": false,
+      "properties": {
+        "address": { "type": "integer", "minimum": 0, "maximum": 255 },
+        "length": { "type": "integer", "minimum": 1, "maximum": 8 },
+        "name": { "$ref": "#/definitions/i18n" },
+        "description": { "$ref": "#/definitions/i18n" },
+        "reserved": { "type": "boolean" }
+      }
+    }
+  }
+}

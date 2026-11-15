@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{name_zh}} / {{name_en}} — {{spec_label}} Rev {{revision}} · {{block_label}} 字节 {{address}}</title>
+<link rel="stylesheet" href="{{style_href}}">
+</head>
+<body>
+<header class="site-header">
+  <nav class="crumbs"><a href="{{index_href}}">{{spec_label}} Rev {{revision}} · {{block_label}} 索引</a></nav>
+</header>
+<main class="page">
+  <h1>
+    <span class="name-zh">{{name_zh}}</span>
+    <span class="name-en" lang="en">{{name_en}}</span>
+  </h1>
+  <p class="address-line"><code>{{address_hex}}</code> · {{block_label}} 字节 {{address}} · {{length}} 字节</p>
+  <dl class="field-meta">
+    <dt>地址</dt>
+    <dd><code>{{address_hex}}</code>（{{block_label}} 字节 {{address}}）</dd>
+    <dt>字节数</dt>
+    <dd>{{length}}</dd>
+    <dt>名称</dt>
+    <dd>{{name_zh}} <span class="en" lang="en">{{name_en}}</span></dd>
+    <dt>说明</dt>
+    <dd>{{description_zh}} <span class="en" lang="en">{{description_en}}</span></dd>
+  </dl>
+</main>
+<footer class="site-footer">
+  <p>{{spec_label}} Rev {{revision}} · {{block_label}}</p>
+  <p class="disclaimer">
+    本站为非官方文档站，内容版权归 SNIA 所有；中文译文仅供参考，如有出入以英文原文为准。
+    <span lang="en">This is an unofficial site. Content is copyright SNIA; Chinese translations
+    are for reference only, and the English original prevails.</span>
+  </p>
+</footer>
+</body>
+</html>

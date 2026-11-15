@@ -1,0 +1,19 @@
+{
+  "spec": "sff-8472",
+  "revision": "12.4",
+  "block": "a0",
+  "size": 128,
+  "handEdited": true,
+  "handEditNote": "本切片（#2）只收录字节 0，用于打通「数据 -> 校验 -> 站点 -> 测试」。其余 127 个字节在索引中标“待补”，全量结构与校验和见 #3。",
+  "bytes": [
+    {
+      "address": 0,
+      "length": 1,
+      "name": { "zh": "标识符", "en": "Identifier" },
+      "description": {
+        "zh": "收发器类型（见表 5-1）",
+        "en": "Transceiver type (see Table 5-1)"
+      }
+    }
+  ]
+}

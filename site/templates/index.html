@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{spec_label}} Rev {{revision}} · {{block_label}} 索引</title>
+<link rel="stylesheet" href="{{style_href}}">
+</head>
+<body>
+<header class="site-header">
+  <nav class="crumbs">{{spec_label}} Rev {{revision}} · {{block_label}}</nav>
+</header>
+<main class="page">
+  <h1>{{spec_label}} Rev {{revision}} · {{block_label}} 寄存器映射</h1>
+  <p class="lede">
+    已收录 {{collected_count}} / {{size}} 个字节。标为「待补」的字节表示本站尚未收录，
+    <strong>不代表该字节不存在</strong>。
+  </p>
+  <table class="byte-table">
+    <thead>
+      <tr><th>地址</th><th>名称</th><th>English</th><th>说明</th></tr>
+    </thead>
+    <tbody>
+      {{rows}}
+    </tbody>
+  </table>
+</main>
+<footer class="site-footer">
+  <p>{{spec_label}} Rev {{revision}} · {{block_label}}</p>
+  <p class="disclaimer">
+    本站为非官方文档站，内容版权归 SNIA 所有；中文译文仅供参考，如有出入以英文原文为准。
+    <span lang="en">This is an unofficial site. Content is copyright SNIA; Chinese translations
+    are for reference only, and the English original prevails.</span>
+  </p>
+</footer>
+</body>
+</html>
