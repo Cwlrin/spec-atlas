@@ -39,3 +39,17 @@ scope 取目录名：`specs` `data` `schema` `tools` `site` `docs` `repo`。
 - 破坏性变更写 `type(scope)!: ...`，正文加 `BREAKING CHANGE:`
 - 正文解释「为什么」，不复述「改了什么」
 - 示例：`feat(data): 补齐 A0h 寄存器映射`、`fix(site): 表格浮层在窄屏溢出`
+
+## Agent skills
+
+### Issue tracker
+
+Issues 与 specs 放在 GitHub Issues（`Cwlrin/spec-atlas`），通过 `gh` CLI 读写。See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+沿用默认五角色命名；另含 wayfinder 五个标签。See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+single-context：根目录一份 `GLOSSARY.md`，决定放 `docs/adr/`。See `docs/agents/domain.md`.
