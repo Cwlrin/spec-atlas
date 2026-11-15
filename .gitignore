@@ -9,4 +9,7 @@ __pycache__/
 # sources not committed (size + license)
 specs/**/source/*.pdf
 archive/legacy/*.pdf
+
+# 译文不入库（版权与分发限制），仅本地用于抽取
+specs/**/source/*.zh.md
 .spec-cache/

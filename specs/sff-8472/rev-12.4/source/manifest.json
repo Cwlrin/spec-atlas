@@ -15,7 +15,7 @@
       "originalName": "SFF-8472-ver12.4-中文.md",
       "sha256": "73cdaaf4ebcebbde706efa9451c06775f4e4e4d15751659476a2d9f9a4086be6",
       "bytes": 102299,
-      "tracked": true
+      "tracked": false
     },
     {
       "path": "archive/legacy/sff-8472-12.4.zh.pdf",
@@ -29,8 +29,8 @@
       "originalName": "SFF-8472-双语手册.html",
       "sha256": "dc9878b961d808cb85a1ec8b8e7087b9ff58a41798fb6df7b8d20502d0d8103a",
       "bytes": 302837,
-      "tracked": true
+      "tracked": false
     }
   ],
-  "policy": "PDF 不入库（体积与版权），仅记录 sha256 以便重新获取时校验。"
+  "policy": "PDF 与译文均不入库：体积与版权（禁止向第三方分发）。仅记录 sha256，供重新获取时校验；抽取在本地进行，入库的是 data/ 下的结构化 JSON。"
 }

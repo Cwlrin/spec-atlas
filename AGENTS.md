@@ -8,7 +8,7 @@
 3. 双语放同一对象：`{"zh": "...", "en": "..."}`。长章节按 `chapter-XX.zh.md` / `.en.md` 成对，共用 anchor。
 4. 一张表一个文件：`tables/table-5-1.json`。
 5. 版本差异是算出来的（diff_revisions），不要手写进 data。
-6. PDF 不入库；新增资料先更新 manifest 的 sha256。
+6. **PDF 与译文 markdown 都不入库**（版权：禁止向第三方分发）；新增资料先更新 manifest 的 sha256。入库的是 `data/` 下的结构化 JSON。
 7. 多协议按 `发布者-编号` 命名，如 `sff-8472`、`ieee-802-3`。
 
 ## 内容边界
