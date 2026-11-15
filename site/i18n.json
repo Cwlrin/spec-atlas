@@ -40,12 +40,12 @@
     "en": "Diagnostics, thresholds and calibration"
   },
   "home.block.other": {
-    "zh": "寄存器块",
-    "en": "Register block"
+    "zh": "寄存器映射",
+    "en": "Register map"
   },
   "home.blocks.title": {
-    "zh": "已收录的寄存器块",
-    "en": "Collected register blocks"
+    "zh": "已收录的寄存器映射",
+    "en": "Collected register maps"
   },
   "home.bus.body": {
     "zh": "主机与模块之间只有两根信号线：一根时钟，一根数据。所有读写都走这条两线串行总线，没有额外的控制线。",
@@ -56,8 +56,8 @@
     "en": "One two-wire bus"
   },
   "home.cal.body": {
-    "zh": "诊断量怎么读，取决于模块声明的校准方式。内部校准：模块用自身的内部常量换算好，A2h 96-105 直接给出物理量。外部校准：模块只给出 A/D 原始计数，读数要拿 A2h 56-95 的常量自己算。",
-    "en": "How you read a measurement depends on the calibration the module declares. With internal calibration the module converts using its own constants, so A2h 96-105 already holds physical values. With external calibration the module reports raw A/D counts, and you apply the constants at A2h 56-95 yourself."
+    "zh": "诊断量怎么读，取决于模块声明的校准方式。内部校准：模块用自身的内部常量换算好，A2h 96-105 直接给出物理量。外部校准：模块只给出 A/D 原始计数，读数要拿 A2h 56-91 的常量自己算。",
+    "en": "How you read a measurement depends on the calibration the module declares. With internal calibration the module converts using its own constants, so A2h 96-105 already holds physical values. With external calibration the module reports raw A/D counts, and you apply the constants at A2h 56-91 yourself."
   },
   "home.cal.title": {
     "zh": "两种校准",
@@ -68,8 +68,8 @@
     "en": "SFF-8472 in three minutes"
   },
   "home.lede": {
-    "zh": "这颗模块用一条两线串行总线，把 512 个字节摊开给主机看：一块说「我是谁」，一块说「我现在怎么样」。",
-    "en": "The module exposes 512 bytes over a single two-wire serial bus: one block says who it is, the other says how it is doing."
+    "zh": "这颗模块用一条两线串行总线，把 512 个字节摊开给主机看：一个地址说「我是谁」，另一个说「我现在怎么样」。",
+    "en": "The module exposes 512 bytes over a single two-wire serial bus: one address says who it is, the other says how it is doing."
   },
   "home.nav": {
     "zh": "{spec} 概览",
@@ -151,12 +151,8 @@
     "zh": "知道了",
     "en": "Got it"
   },
-  "notice.text": {
-    "zh": "本站是非官方文档站，内容版权归 SNIA 所有；中文译文仅供参考，如有出入以英文原文为准。",
-    "en": "This is an unofficial site. Content is copyright SNIA; Chinese translations are for reference only, and the English original prevails."
-  },
   "home.block.size": {
-    "zh": "{size} 字节",
-    "en": "{size} bytes"
+    "zh": "已收录 {size} 字节",
+    "en": "{size} bytes collected"
   }
 }

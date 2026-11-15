@@ -15,13 +15,12 @@ AC4 用 GLOSSARY.md 做交叉校验：中文用到了表里的词，英文就必
 import html.parser
 import json
 import re
-import subprocess
-import sys
 import unittest
 from pathlib import Path
 
+from artifacts import DIST, bilingual_nodes, build, node, run, tags
+
 ROOT = Path(__file__).resolve().parents[1]
-DIST = ROOT / "dist"
 BLOCK_DIR = DIST / "sff-8472" / "12.4" / "a0"
 BYTE_PAGE = BLOCK_DIR / "0.html"
 INDEX_PAGE = BLOCK_DIR / "index.html"
@@ -32,59 +31,9 @@ STYLE_CSS = ROOT / "site" / "style.css"
 PROBE = ROOT / "tests" / "fixtures" / "lang-probe.js"
 
 
-def run(args, cwd=ROOT):
-    return subprocess.run(
-        [sys.executable] + args,
-        cwd=str(cwd),
-        capture_output=True,
-        text=True,
-        encoding="utf-8",
-        errors="replace",
-    )
-
-
-def node(scenario):
-    result = subprocess.run(
-        ["node", str(PROBE), scenario],
-        cwd=str(ROOT),
-        capture_output=True,
-        text=True,
-        encoding="utf-8",
-        errors="replace",
-    )
-    if result.returncode != 0:
-        raise AssertionError(
-            "node 场景 %s 失败（%s）\nstdout:\n%s\nstderr:\n%s"
-            % (scenario, result.returncode, result.stdout, result.stderr)
-        )
-    return json.loads(result.stdout)
-
-
-def build(*extra):
-    result = run(["tools/build.py"] + list(extra))
-    if result.returncode != 0:
-        raise AssertionError(
-            "build failed (%s)\nstdout:\n%s\nstderr:\n%s"
-            % (result.returncode, result.stdout, result.stderr)
-        )
-    return result
-
-
-class _Attributes(html.parser.HTMLParser):
-    """收集每个开始标签的全部属性，只关心双语配对与语言状态。"""
-
-    def __init__(self):
-        super().__init__(convert_charrefs=True)
-        self.tags = []
-
-    def handle_starttag(self, tag, attrs):
-        self.tags.append(dict(attrs))
-
-
-def tags(html):
-    parser = _Attributes()
-    parser.feed(html)
-    return parser.tags
+def lang(scenario):
+    """语言行为桩：规则在 site/lang.js 里，桩只提供最小 DOM。"""
+    return node(PROBE, scenario)
 
 
 class _BareText(html.parser.HTMLParser):
@@ -134,14 +83,6 @@ def bare_text(html):
     parser.feed(html)
     return parser.bare
 
-
-def bilingual_nodes(html):
-    """返回 [(zh, en)]：所有带 data-zh 的节点；缺 data-en 的 en 为 None。"""
-    return [
-        (tag.get("data-zh"), tag.get("data-en"))
-        for tag in tags(html)
-        if "data-zh" in tag or "data-en" in tag
-    ]
 
 
 class BilingualMarkupTest(unittest.TestCase):
@@ -236,27 +177,27 @@ class LanguageBehaviourTest(unittest.TestCase):
         build()
 
     def test_defaults_to_chinese_on_first_visit(self):
-        state = node("fresh")
+        state = lang("fresh")
         self.assertEqual(state["lang"], "zh")
         self.assertEqual(state["langAttr"], "zh-CN")
         self.assertIsNone(state["stored"], "首次访问不该写入任何选择")
 
     def test_remembers_a_saved_english_choice(self):
-        state = node("remembered-en")
+        state = lang("remembered-en")
         self.assertEqual(state["lang"], "en")
         self.assertEqual(state["langAttr"], "en")
 
     def test_unknown_saved_value_falls_back_to_chinese(self):
-        state = node("corrupt")
+        state = lang("corrupt")
         self.assertEqual(state["lang"], "zh")
 
     def test_switching_updates_state_and_stores_the_choice(self):
-        to_en = node("switch-en")
+        to_en = lang("switch-en")
         self.assertEqual(to_en["lang"], "en")
         self.assertEqual(to_en["pressed"], ["false", "true"], "按钮状态要跟着变")
         self.assertEqual(to_en["stored"], "en", "选择必须记在本机")
 
-        back = node("switch-back-zh")
+        back = lang("switch-back-zh")
         self.assertEqual(back["lang"], "zh")
         self.assertEqual(back["pressed"], ["true", "false"])
         self.assertEqual(back["stored"], "zh")
@@ -264,16 +205,16 @@ class LanguageBehaviourTest(unittest.TestCase):
     def test_switching_stays_on_the_current_page(self):
         """AC3：切换不跳转、不刷新，所以仍停在当前字段页。"""
         # 先证明这个桩真的能记账，否则下面的空数组什么也证明不了。
-        control = node("navigate-control")
+        control = lang("navigate-control")
         self.assertTrue(
             control["navigations"], "桩没接上跳转，「没跳转」的断言会空转"
         )
         for scenario in ("switch-en", "switch-back-zh"):
-            state = node(scenario)
+            state = lang(scenario)
             self.assertEqual(state["navigations"], [], "%s 触发了跳转" % (scenario,))
 
     def test_denied_storage_keeps_the_choice_for_this_page(self):
-        state = node("storage-denied")
+        state = lang("storage-denied")
         self.assertEqual(state["lang"], "en", "写不进 localStorage 也要当次生效")
 
 

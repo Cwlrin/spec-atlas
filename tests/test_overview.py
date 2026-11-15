@@ -7,88 +7,19 @@ AC3（首次访问提示条）的可关闭与「关过不再出现」是浏览�
 用 node 跑 site/notice.js + 最小 DOM 桩来测（tests/fixtures/notice-probe.js）。
 """
 
-import html.parser
-import json
 import re
-import subprocess
-import sys
 import unittest
 from pathlib import Path
 
+from artifacts import DIST, bilingual_nodes, build, node, pages, tags
+
 ROOT = Path(__file__).resolve().parents[1]
-DIST = ROOT / "dist"
 HOME = DIST / "index.html"
-BLOCK_INDEX = DIST / "sff-8472" / "12.4" / "a0" / "index.html"
 PROBE = ROOT / "tests" / "fixtures" / "notice-probe.js"
 
 
-def run(args):
-    return subprocess.run(
-        [sys.executable] + args,
-        cwd=str(ROOT),
-        capture_output=True,
-        text=True,
-        encoding="utf-8",
-        errors="replace",
-    )
-
-
-def build(*extra):
-    result = run(["tools/build.py"] + list(extra))
-    if result.returncode != 0:
-        raise AssertionError(
-            "build failed (%s)\nstdout:\n%s\nstderr:\n%s"
-            % (result.returncode, result.stdout, result.stderr)
-        )
-    return result
-
-
-def node(scenario):
-    result = subprocess.run(
-        ["node", str(PROBE), scenario],
-        cwd=str(ROOT),
-        capture_output=True,
-        text=True,
-        encoding="utf-8",
-        errors="replace",
-    )
-    if result.returncode != 0:
-        raise AssertionError(
-            "node 场景 %s 失败（%s）\nstdout:\n%s\nstderr:\n%s"
-            % (scenario, result.returncode, result.stdout, result.stderr)
-        )
-    return json.loads(result.stdout)
-
-
-class TagCollector(html.parser.HTMLParser):
-    """只收开始标签及其属性；不看文本内容。"""
-
-    def __init__(self):
-        super().__init__(convert_charrefs=True)
-        self.tags = []
-
-    def handle_starttag(self, tag, attrs):
-        self.tags.append((tag, dict(attrs)))
-
-
-def tags(source):
-    collector = TagCollector()
-    collector.feed(source)
-    return [attrs for _, attrs in collector.tags]
-
-
-def bilingual_nodes(source):
-    """每一对 {中文, 英文}：data-zh / data-en 成对出现的一个节点。"""
-    return [
-        (attrs.get("data-zh"), attrs.get("data-en"))
-        for attrs in tags(source)
-        if "data-zh" in attrs or "data-en" in attrs
-    ]
-
-
-def pages():
-    """dist/ 下所有页面：以后新增页面自动纳入全站断言。"""
-    return sorted(DIST.rglob("*.html"))
+def notice(scenario):
+    return node(PROBE, scenario)
 
 
 class OverviewPageTest(unittest.TestCase):
@@ -140,17 +71,21 @@ class OverviewPageTest(unittest.TestCase):
         ]
         self.assertEqual(sorted(values), ["en", "zh"], "首页要有两态切换")
 
-    def test_every_page_can_reach_the_overview_and_back(self):
-        """从任何一个页面都点得回首页，且首页点得进块索引：不是死链。"""
+    def test_every_page_can_reach_the_overview(self):
+        """从任何一个页面都点得回首页：按真实路径解析，不是比字符串。"""
         for page in pages():
             relative = page.relative_to(DIST).as_posix()
             if page == HOME:
                 continue
             text = page.read_text(encoding="utf-8")
-            self.assertIn(
-                'href="../../../../index.html"',
-                text,
-                "%s 没有回首页的链接" % (relative,),
+            homes = [
+                link
+                for link in re.findall(r'href="([^"]*index\.html)"', text)
+                if (page.parent / link).resolve() == HOME.resolve()
+            ]
+            self.assertTrue(
+                homes,
+                "%s 没有一条真正指回首页的链接（解析后的落点才算数）" % (relative,),
             )
         home_links = re.findall(r'href="([^"]+)"', self.html)
         for link in home_links:
@@ -248,33 +183,38 @@ class FirstVisitNoticeBehaviourTest(unittest.TestCase):
         build()
 
     def test_notice_shows_on_the_first_visit(self):
-        state = node("fresh")
+        state = notice("fresh")
         self.assertEqual(state["notice"], "shown")
         self.assertIsNone(state["stored"], "首次访问不该写入任何标记")
 
     def test_dismissing_hides_it_and_writes_the_marker(self):
-        state = node("dismiss-click")
+        state = notice("dismiss-click")
         self.assertEqual(state["notice"], "dismissed", "点关闭后提示条必须消失")
         self.assertEqual(state["stored"], "1", "关闭状态要记在本机")
 
     def test_it_does_not_come_back_on_the_next_visit(self):
         """关过就不再出现：带着标记重新进站。"""
-        state = node("dismissed-before")
+        state = notice("dismissed-before")
         self.assertEqual(state["notice"], "dismissed")
         self.assertEqual(state["dismisses"], 0, "已经关过，不该再让用户关一次")
 
     def test_unknown_saved_value_shows_the_notice_again(self):
-        state = node("corrupt")
+        state = notice("corrupt")
         self.assertEqual(state["notice"], "shown", "脏值应当当没关过处理")
 
+    def test_a_first_visitor_still_sees_it_when_storage_throws(self):
+        """读 localStorage 本身就抛（禁 cookie / 沙箱）时，首次访问仍要看得到。"""
+        state = notice("storage-blocked")
+        self.assertEqual(state["notice"], "shown", "拿不到存储不该让提示条消失")
+
     def test_storage_denial_does_not_break_the_page(self):
-        state = node("storage-denied")
+        state = notice("storage-denied")
         self.assertEqual(state["notice"], "dismissed", "禁写时当次仍要能关掉")
 
     def test_the_probe_can_observe_a_real_change(self):
         """桩自检：证明这些断言不是空转的。"""
-        baseline = node("fresh")
-        changed = node("dismiss-click")
+        baseline = notice("fresh")
+        changed = notice("dismiss-click")
         self.assertNotEqual(baseline["notice"], changed["notice"])
 
 

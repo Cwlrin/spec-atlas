@@ -54,16 +54,18 @@ function makeElement(attributes) {
 
 function makeDom(stored) {
   /* 与模板一致：提示条默认带 hidden，由脚本决定是否揭开。 */
-  const notice = makeElement({ "data-first-visit-notice": "", hidden: "" });
   const dismiss = makeElement({ "data-notice-dismiss": "" });
+  const notice = makeElement({ "data-first-visit-notice": "", hidden: "" });
   /* 关闭按钮必须在提示条内部：拖到外面就不是「关这条提示」了。 */
   const parents = new Map([[dismiss, notice]]);
-  const listened = [];
+  /* 真 DOM 里元素自己也有 querySelectorAll：关闭按钮是在提示条内部找的。 */
+  notice.querySelectorAll = (selector) =>
+    selector === "[data-notice-dismiss]" ? [dismiss] : [];
+  dismiss.querySelectorAll = (selector) => (parents.get(dismiss) === notice ? [] : []);
 
   const document = {
     readyState: "complete",
     documentElement: makeElement({ "data-lang": "zh" }),
-    documentElement_: null,
     addEventListener(type, handler) {
       (listeners[type] = listeners[type] || []).push(handler);
     },
@@ -86,7 +88,7 @@ function makeDom(stored) {
   const storage = makeStorage(stored);
   const window = { localStorage: storage, document };
 
-  return { window, document, notice, dismiss, storage, listeners, listened };
+  return { window, document, notice, dismiss, storage, listeners };
 }
 
 function load(dom) {
@@ -140,6 +142,17 @@ const scenarios = {
   /* 存了脏值：当没关过处理，提示条出现。 */
   "corrupt": () => {
     const dom = makeDom({ "spec-atlas.notice": "banana" });
+    load(dom);
+    return snapshot(dom);
+  },
+  /* 读 localStorage 这一步就抛（禁 cookie / 沙箱）：首次访问仍要看到提示条。 */
+  "storage-blocked": () => {
+    const dom = makeDom({});
+    Object.defineProperty(dom.window, "localStorage", {
+      get() {
+        throw new Error("blocked");
+      }
+    });
     load(dom);
     return snapshot(dom);
   },

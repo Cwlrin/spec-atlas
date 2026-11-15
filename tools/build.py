@@ -33,8 +33,9 @@ COPY_FILE = "i18n.json"
 LANGS = ("zh", "en")
 DEFAULT_LANG = "zh"
 
-# 站点首页只讲这套接口的公共形状，不绑定某一个协议版本；块清单来自 data/。
-HOME_SPEC = "sff-8472"
+# 站点目前只呈现一个协议；首页标题里的协议名从 data/ 推出来，
+# 不在代码里另写一份（写两份迟早对不上）。
+HOME_SPEC_FALLBACK = "spec-atlas"
 
 # 原样拷进产物的静态资源：页面只按相对路径引用它们。
 ASSETS = ("style.css", "lang.js", "notice.js")
@@ -258,8 +259,8 @@ class Page:
             "style_href": "../" * depth + "style.css",
             "lang_href": "../" * depth + "lang.js",
             "notice_href": "../" * depth + "notice.js",
-            # 从站点根回首页就是一块块往上走；深度即当前目录到 dist/ 的层数。
-            "home_href": "../" * (depth + 1) + "index.html",
+            # 深度就是当前目录到 dist/ 的层数，往上走这么多层正好落在站点根。
+            "home_href": "../" * depth + "index.html",
             # 字段页与索引页同目录，索引导航就是相邻文件，不必绕回站点根。
             "index_href": "index.html",
         }
@@ -347,9 +348,10 @@ def render_home(template, entries, blocks, switch_template, notice):
     首页不依赖任何单个寄存器块，所以先渲染它；块清单来自 data/，
     收录了哪些块就列哪些，不在这里写死。
     """
+    spec = blocks[0][0] if blocks else HOME_SPEC_FALLBACK
     values = {
         "default_lang": DEFAULT_LANG,
-        "spec": HOME_SPEC.upper(),
+        "spec": spec.upper(),
         "style_href": "style.css",
         "lang_href": "lang.js",
         "notice_href": "notice.js",
@@ -453,7 +455,7 @@ def build(data_dir, dist_dir, site_dir, schema_dir):
         newline="\n",
     )
 
-    print("构建完成：%d 个寄存器块，产物在 %s" % (len(blocks), dist))
+    print("构建完成：%d 个寄存器映射，产物在 %s" % (len(blocks), dist))
     return 0
 
 

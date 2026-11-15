@@ -12,6 +12,16 @@
   var STORAGE_KEY = "spec-atlas.notice";
   var DONE = "1";
 
+  function storage() {
+    /* 某些浏览器在读 localStorage 这一步就抛（禁 cookie / 沙箱），
+       不等 getItem 出错。读不到就当拿不到存储，页面照常工作。 */
+    try {
+      return global.localStorage || null;
+    } catch (error) {
+      return null;
+    }
+  }
+
   function dismissed(storage) {
     try {
       return storage ? storage.getItem(STORAGE_KEY) === DONE : false;
@@ -39,10 +49,6 @@
     if (typeof bar.remove === "function") {
       bar.remove();
     }
-    var parent = bar.parentNode;
-    if (parent && typeof parent.removeChild === "function") {
-      parent.removeChild(bar);
-    }
   }
 
   function show(bar) {
@@ -59,25 +65,21 @@
     if (!bars.length) {
       return;
     }
-    var storage = global.localStorage;
+    var store = storage();
     for (var i = 0; i < bars.length; i += 1) {
       var bar = bars[i];
-      if (dismissed(storage)) {
+      if (dismissed(store)) {
         hide(bar);
         continue;
       }
       show(bar);
-      wire(bar, storage);
+      wire(bar, store);
     }
   }
 
   function wire(bar, storage) {
-    var buttons = bar.querySelectorAll
-      ? bar.querySelectorAll("[data-notice-dismiss]")
-      : [];
-    if (!buttons.length && typeof document !== "undefined") {
-      buttons = document.querySelectorAll("[data-notice-dismiss]");
-    }
+    /* 关闭按钮就在提示条里面：只在条内找，免得页面上别的按钮被当成关闭。 */
+    var buttons = bar.querySelectorAll("[data-notice-dismiss]");
     for (var i = 0; i < buttons.length; i += 1) {
       buttons[i].addEventListener("click", function (event) {
         if (event && typeof event.preventDefault === "function") {
