@@ -1,11 +1,99 @@
 {
-  "nav.index": {
-    "zh": "{spec} Rev {revision} · {block} 索引",
-    "en": "{spec} Rev {revision} · {block} index"
+  "byte.length_unit": {
+    "zh": "字节",
+    "en": "byte"
   },
-  "index.title": {
-    "zh": "{spec} Rev {revision} · {block} 索引",
-    "en": "{spec} Rev {revision} · {block} index"
+  "byte.position": {
+    "zh": "（{block} 字节 {address}）",
+    "en": "(byte {address} of {block})"
+  },
+  "byte.title": {
+    "zh": "{name_zh} — {spec} Rev {revision} · {block} 字节 {address}",
+    "en": "{name_en} — {spec} Rev {revision} · {block} byte {address}"
+  },
+  "footer.disclaimer": {
+    "zh": "本站为非官方文档站，内容版权归 SNIA 所有；中文译文仅供参考，如有出入以英文原文为准。",
+    "en": "This is an unofficial site. Content is copyright SNIA; Chinese translations are for reference only, and the English original prevails."
+  },
+  "footer.home": {
+    "zh": "{spec} · 结构化寄存器参考",
+    "en": "{spec} · a structured register reference"
+  },
+  "footer.spec": {
+    "zh": "{spec} Rev {revision} · {block}",
+    "en": "{spec} Rev {revision} · {block}"
+  },
+  "home.addr.body": {
+    "zh": "总线上有两个地址，只差最低一位：A0h 是 1010000X，A2h 是 1010001X，其中 X 是读写位。A0h 放身份与静态参数，A2h 放诊断、阈值与校准常量；两块各 256 字节，互不覆盖。",
+    "en": "Two addresses sit one bit apart: A0h is 1010000X and A2h is 1010001X, where X is the read/write bit. A0h holds identity and static parameters; A2h holds diagnostics, thresholds and calibration constants. Each block is 256 bytes and neither overwrites the other."
+  },
+  "home.addr.title": {
+    "zh": "两个总线地址",
+    "en": "Two bus addresses"
+  },
+  "home.block.a0": {
+    "zh": "身份与静态参数，256 字节",
+    "en": "Identity and static parameters, 256 bytes"
+  },
+  "home.block.a2": {
+    "zh": "诊断、阈值与校准，256 字节",
+    "en": "Diagnostics, thresholds and calibration, 256 bytes"
+  },
+  "home.block.other": {
+    "zh": "寄存器块",
+    "en": "Register block"
+  },
+  "home.blocks.title": {
+    "zh": "已收录的寄存器块",
+    "en": "Collected register blocks"
+  },
+  "home.bus.body": {
+    "zh": "主机与模块之间只有两根信号线：一根时钟，一根数据。所有读写都走这条两线串行总线，没有额外的控制线。",
+    "en": "Host and module share just two wires: one clock, one data. Every read and write — including address selection — travels on this two-wire serial bus, with no extra control lines."
+  },
+  "home.bus.title": {
+    "zh": "一条两线总线",
+    "en": "One two-wire bus"
+  },
+  "home.cal.body": {
+    "zh": "诊断量怎么读，取决于模块声明的校准方式。内部校准：模块用自身的内部常量换算好，A2h 96-105 直接给出物理量。外部校准：模块只给出 A/D 原始计数，读数要拿 A2h 56-95 的常量自己算。",
+    "en": "How you read a measurement depends on the calibration the module declares. With internal calibration the module converts using its own constants, so A2h 96-105 already holds physical values. With external calibration the module reports raw A/D counts, and you apply the constants at A2h 56-95 yourself."
+  },
+  "home.cal.title": {
+    "zh": "两种校准",
+    "en": "Two calibration modes"
+  },
+  "home.h1": {
+    "zh": "三分钟看懂 SFF-8472",
+    "en": "SFF-8472 in three minutes"
+  },
+  "home.lede": {
+    "zh": "这颗模块用一条两线串行总线，把 512 个字节摊开给主机看：一块说「我是谁」，一块说「我现在怎么样」。",
+    "en": "The module exposes 512 bytes over a single two-wire serial bus: one block says who it is, the other says how it is doing."
+  },
+  "home.nav": {
+    "zh": "{spec} 概览",
+    "en": "{spec} overview"
+  },
+  "home.open": {
+    "zh": "看索引",
+    "en": "Open the index"
+  },
+  "home.title": {
+    "zh": "{spec} 概览",
+    "en": "{spec} overview"
+  },
+  "index.col.address": {
+    "zh": "地址",
+    "en": "Address"
+  },
+  "index.col.description": {
+    "zh": "说明",
+    "en": "Description"
+  },
+  "index.col.name": {
+    "zh": "名称",
+    "en": "Name"
   },
   "index.h1": {
     "zh": "{spec} Rev {revision} · {block} 寄存器映射",
@@ -15,33 +103,21 @@
     "zh": "已收录 {collected} / {size} 个字节。标为「待补」的字节表示本站尚未收录，<strong>不代表该字节不存在</strong>。",
     "en": "Collected {collected} / {size} bytes. A byte marked “pending” has not been collected here yet; <strong>its absence does not mean the byte does not exist</strong>."
   },
-  "index.col.address": {
-    "zh": "地址",
-    "en": "Address"
-  },
-  "index.col.name": {
-    "zh": "名称",
-    "en": "Name"
-  },
-  "index.col.description": {
-    "zh": "说明",
-    "en": "Description"
-  },
   "index.pending": {
     "zh": "待补",
     "en": "pending"
   },
-  "byte.title": {
-    "zh": "{name_zh} — {spec} Rev {revision} · {block} 字节 {address}",
-    "en": "{name_en} — {spec} Rev {revision} · {block} byte {address}"
-  },
-  "byte.position": {
-    "zh": "（{block} 字节 {address}）",
-    "en": "(byte {address} of {block})"
+  "index.title": {
+    "zh": "{spec} Rev {revision} · {block} 索引",
+    "en": "{spec} Rev {revision} · {block} index"
   },
   "label.address": {
     "zh": "地址",
     "en": "Address"
+  },
+  "label.description": {
+    "zh": "说明",
+    "en": "Description"
   },
   "label.length": {
     "zh": "字节数",
@@ -51,17 +127,9 @@
     "zh": "名称",
     "en": "Name"
   },
-  "label.description": {
-    "zh": "说明",
-    "en": "Description"
-  },
-  "footer.spec": {
-    "zh": "{spec} Rev {revision} · {block}",
-    "en": "{spec} Rev {revision} · {block}"
-  },
-  "footer.disclaimer": {
-    "zh": "本站为非官方文档站，内容版权归 SNIA 所有；中文译文仅供参考，如有出入以英文原文为准。",
-    "en": "This is an unofficial site. Content is copyright SNIA; Chinese translations are for reference only, and the English original prevails."
+  "lang.en": {
+    "zh": "English",
+    "en": "English"
   },
   "lang.label": {
     "zh": "语言",
@@ -71,12 +139,20 @@
     "zh": "中文",
     "en": "中文"
   },
-  "lang.en": {
-    "zh": "English",
-    "en": "English"
+  "nav.home": {
+    "zh": "概览",
+    "en": "Overview"
   },
-  "byte.length_unit": {
-    "zh": "字节",
-    "en": "byte"
+  "nav.index": {
+    "zh": "{spec} Rev {revision} · {block} 索引",
+    "en": "{spec} Rev {revision} · {block} index"
+  },
+  "notice.dismiss": {
+    "zh": "知道了",
+    "en": "Got it"
+  },
+  "notice.text": {
+    "zh": "本站是非官方文档站，内容版权归 SNIA 所有；中文译文仅供参考，如有出入以英文原文为准。",
+    "en": "This is an unofficial site. Content is copyright SNIA; Chinese translations are for reference only, and the English original prevails."
   }
 }

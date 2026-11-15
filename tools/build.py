@@ -33,6 +33,12 @@ COPY_FILE = "i18n.json"
 LANGS = ("zh", "en")
 DEFAULT_LANG = "zh"
 
+# 站点首页只讲这套接口的公共形状，不绑定某一个协议版本；块清单来自 data/。
+HOME_SPEC = "sff-8472"
+
+# 原样拷进产物的静态资源：页面只按相对路径引用它们。
+ASSETS = ("style.css", "lang.js", "notice.js")
+
 for stream in (sys.stdout, sys.stderr):
     if hasattr(stream, "reconfigure"):
         stream.reconfigure(encoding="utf-8", errors="replace")
@@ -251,6 +257,9 @@ class Page:
             "collected": sum(byte.get("length", 1) for byte in document["bytes"]),
             "style_href": "../" * depth + "style.css",
             "lang_href": "../" * depth + "lang.js",
+            "notice_href": "../" * depth + "notice.js",
+            # 从站点根回首页就是一块块往上走；深度即当前目录到 dist/ 的层数。
+            "home_href": "../" * (depth + 1) + "index.html",
             # 字段页与索引页同目录，索引导航就是相邻文件，不必绕回站点根。
             "index_href": "index.html",
         }
@@ -332,6 +341,59 @@ class Page:
         return "\n      ".join(rows)
 
 
+def render_home(template, entries, blocks, switch_template, notice):
+    """站点首页：讲清这条总线的形状，再把已收录的块列出去处。
+
+    首页不依赖任何单个寄存器块，所以先渲染它；块清单来自 data/，
+    收录了哪些块就列哪些，不在这里写死。
+    """
+    values = {
+        "default_lang": DEFAULT_LANG,
+        "spec": HOME_SPEC.upper(),
+        "style_href": "style.css",
+        "lang_href": "lang.js",
+        "notice_href": "notice.js",
+        "notice": notice,
+    }
+    copy = Copy(entries, values)
+    title_zh, title_en = plain(copy.pair("home.title")[0]), plain(copy.pair("home.title")[1])
+    values["lang_switch"] = render(
+        copy.expand(switch_template),
+        {
+            "pressed_zh": "true" if DEFAULT_LANG == "zh" else "false",
+            "pressed_en": "true" if DEFAULT_LANG == "en" else "false",
+        },
+    )
+    values["blocks"] = render_home_blocks(copy, blocks)
+    return render(
+        copy.expand(template),
+        dict(values, title_zh=title_zh, title_en=title_en),
+    )
+
+
+def render_home_blocks(copy, blocks):
+    """已收录的块：一个块一行，链接到它自己的索引页。"""
+    items = []
+    for spec, revision, block, document in blocks:
+        count = sum(byte.get("length", 1) for byte in document["bytes"])
+        key = "home.block.%s" % (block,)
+        blurb = copy.pair(key) if key in copy.entries else copy.pair("home.block.other")
+        items.append(
+            '<li><a href="%s/%s/%s/index.html"><code>%s</code> '
+            '<span class="block-go">%s</span></a>'
+            '<span class="block-meta">%s</span></li>'
+            % (
+                html.escape(spec),
+                html.escape(revision),
+                html.escape(block),
+                block_label(block),
+                bilingual(*copy.pair("home.open")),
+                bilingual(*blurb),
+            )
+        )
+    return "\n    ".join(items)
+
+
 def build(data_dir, dist_dir, site_dir, schema_dir):
     _, errors = schema_check.validate_data_dir(data_dir, schema_dir)
     if errors:
@@ -344,6 +406,8 @@ def build(data_dir, dist_dir, site_dir, schema_dir):
     byte_template = (templates / "byte.html").read_text(encoding="utf-8")
     index_template = (templates / "index.html").read_text(encoding="utf-8")
     switch_template = (templates / "lang-switch.html").read_text(encoding="utf-8")
+    home_template = (templates / "home.html").read_text(encoding="utf-8")
+    notice_template = (templates / "notice.html").read_text(encoding="utf-8")
 
     dist = Path(dist_dir).resolve()
     root = ROOT.resolve()
@@ -353,8 +417,10 @@ def build(data_dir, dist_dir, site_dir, schema_dir):
         shutil.rmtree(dist)
     dist.mkdir(parents=True)
 
-    shutil.copyfile(Path(site_dir) / "style.css", dist / "style.css")
-    shutil.copyfile(Path(site_dir) / "lang.js", dist / "lang.js")
+    for asset in ASSETS:
+        shutil.copyfile(Path(site_dir) / asset, dist / asset)
+
+    notice = render(Copy(entries, {"default_lang": DEFAULT_LANG}).expand(notice_template), {})
 
     blocks = load_blocks(data_dir)
     for spec, revision, block, document in blocks:
@@ -363,6 +429,7 @@ def build(data_dir, dist_dir, site_dir, schema_dir):
         depth = len(out_dir.relative_to(dist).parts)
         page = Page(entries, spec, revision, block, document, depth)
         page.values["lang_switch"] = page.switcher(switch_template)
+        page.values["notice"] = notice
 
         for byte in sorted(document["bytes"], key=lambda item: item["address"]):
             rendered = page.render_byte(byte_template, byte)
@@ -372,6 +439,12 @@ def build(data_dir, dist_dir, site_dir, schema_dir):
         (out_dir / "index.html").write_text(
             page.render_index(index_template), encoding="utf-8", newline="\n"
         )
+
+    (dist / "index.html").write_text(
+        render_home(home_template, entries, blocks, switch_template, notice),
+        encoding="utf-8",
+        newline="\n",
+    )
 
     print("构建完成：%d 个寄存器块，产物在 %s" % (len(blocks), dist))
     return 0

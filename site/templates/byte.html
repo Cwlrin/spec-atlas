@@ -7,10 +7,12 @@
 <link rel="stylesheet" href="{{style_href}}">
 <!-- 同步加载：在首次绘制之前就把语言定下来，免得英文读者看到一闪而过的中文。 -->
 <script src="{{lang_href}}"></script>
+<script src="{{notice_href}}" defer></script>
 </head>
 <body>
+{{notice:raw}}
 <header class="site-header">
-  <nav class="crumbs"><a href="{{index_href}}">{{bi:nav.index}}</a></nav>
+  <nav class="crumbs"><a href="{{home_href}}">{{bi:nav.home}}</a> / <a href="{{index_href}}">{{bi:nav.index}}</a></nav>
   {{lang_switch:raw}}
 </header>
 <main class="page">

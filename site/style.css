@@ -93,3 +93,60 @@ code { font-family: ui-monospace, "SFMono-Regular", Consolas, monospace; }
 .byte-table tr.pending td { color: var(--muted); }
 .byte-table a { color: var(--accent); text-decoration: none; }
 .byte-table a:hover { text-decoration: underline; }
+
+/* 首次访问提示条：默认 hidden，由 notice.js 揭开；关掉后从可见文档里消失。 */
+.notice {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0.6rem 1.25rem;
+  background: var(--bg-muted);
+  border-bottom: 1px solid var(--line);
+}
+.notice[hidden] { display: none; }
+.notice p { margin: 0; flex: 1 1 24rem; font-size: 0.9rem; color: var(--muted); }
+.notice button {
+  font: inherit;
+  font-size: 0.9rem;
+  padding: 0.25rem 0.8rem;
+  color: var(--accent);
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  cursor: pointer;
+}
+.notice button:hover { border-color: var(--accent); }
+
+/* 概览页：三张卡讲清一条总线、两个地址、两种校准。 */
+.card-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  margin: 1.5rem 0;
+}
+.card {
+  padding: 0.9rem 1.1rem;
+  background: var(--bg-muted);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+.card h2 { margin: 0 0 0.5rem; font-size: 1rem; }
+.card p { margin: 0; color: var(--muted); }
+
+.section-title { margin-top: 2rem; font-size: 1.1rem; }
+
+.block-list { list-style: none; margin: 0.75rem 0 0; padding: 0; }
+.block-list li {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  align-items: baseline;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid var(--line);
+}
+.block-list a { color: var(--accent); text-decoration: none; }
+.block-list a:hover { text-decoration: underline; }
+.block-go { font-size: 0.85rem; }
+.block-meta { color: var(--muted); font-size: 0.9rem; }

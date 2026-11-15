@@ -41,7 +41,9 @@ py -3 -m unittest discover -s tests   # 产物测试
 - 规格：[issue #1](https://github.com/Cwlrin/spec-atlas/issues/1)（v1 范围 = A0h 全 128 + A2h 0-127）
 - 任务：[issue #2](https://github.com/Cwlrin/spec-atlas/issues/2) ~ [#11](https://github.com/Cwlrin/spec-atlas/issues/11)，共 10 张垂直切片票
 - #2（走通一个字节）已完成：数据 -> 校验 -> 站点 -> 测试的最小闭环
-- **下一步**：#3（A0h 全 128 字节与校验和）
+- #3（A0h 全 128 字节与校验和）进行中
+- #4（概览页、全站免责声明、首次访问提示条）已完成
+- **下一步**：等 #3 收口后开 #5
 
 ## 新会话怎么开工
 
@@ -69,10 +71,16 @@ py -3 -m unittest discover -s tests   # 产物测试
 根元素 `<html data-lang="zh|en">` 配 CSS 决定显示哪一版；`site/lang.js` 负责默认中文、
 记住选择（`localStorage["spec-atlas.lang"]`）、切换时只改属性不跳转。切换后仍停在当前字段页。
 
+**概览与免责声明（#4 已完成）**：站点根 `dist/index.html` 是入口页，三张卡分别讲清
+一条两线总线、A0h/A2h 两个地址、内部/外部两种校准，块清单从 `data/` 生成；块页面的
+面包屑能点回首页。全站 footer 带中英双语免责声明（非官方 / 版权归 SNIA / 译文仅供参考），
+`tests/` 里遍历 `dist/**/*.html` 断言，新增页面自动纳入。首次访问提示条随 HTML 下发、
+默认 `hidden`，由 `site/notice.js` 揭开；关掉后记 `localStorage["spec-atlas.notice"]`，
+回访不再出现（禁写 localStorage 时当次仍能关）。
+
 **暂定**：皮肤归 #10，仍是临时形态。
 
 ## 尚未实现
 
 - #3：A0h 其余 127 个字节、CC_BASE 校验和、覆盖率检查，以及从译文抽取的 `tools/build_data.py`
-- #4：首页、首次访问提示条（免责声明文案已随 #2 落到 footer，可复用）
 - 其余（位域、表引用、搜索、皮肤）：见 issue #1 的票列表

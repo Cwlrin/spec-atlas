@@ -1,0 +1,7 @@
+<!-- 首次访问提示条：随 HTML 一起到达，默认 hidden。
+     回访者不该看到它闪一下再消失，所以由 notice.js 决定是否揭开；
+     脚本没跑（或禁用）时不出现，免责声明仍由 footer 承担。 -->
+<aside class="notice" data-first-visit-notice role="note" hidden>
+  <p>{{bi:notice.text}}</p>
+  <button type="button" data-notice-dismiss>{{bi:notice.dismiss}}</button>
+</aside>
