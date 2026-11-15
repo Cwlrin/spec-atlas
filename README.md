@@ -1,4 +1,6 @@
-# 协议文档站（spec docs）
+# spec-atlas
+
+> Bilingual, browsable SFF specs — register maps, tables, revision diffs.
 
 把 SFF 系列规范做成可读、可对照、可版本比较的文档站。
 
