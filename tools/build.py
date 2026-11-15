@@ -292,9 +292,7 @@ class Page:
         return Copy(self.entries, values)
 
     def titles(self, copy, key):
-        """<title> 与 data-title-*：纯文本，不带标签。"""
-        zh, en = copy.pair(key)
-        return plain(zh), plain(en)
+        return titles(copy, key)
 
     def render_byte(self, template, byte):
         copy = self.byte_copy(byte)
@@ -342,11 +340,17 @@ class Page:
         return "\n      ".join(rows)
 
 
-def render_home(template, entries, blocks, switch_template, notice):
-    """站点首页：讲清这条总线的形状，再把已收录的块列出去处。
+def titles(copy, key):
+    """<title> 与 data-title-*：纯文本，不带标签。"""
+    zh, en = copy.pair(key)
+    return plain(zh), plain(en)
 
-    首页不依赖任何单个寄存器块，所以先渲染它；块清单来自 data/，
-    收录了哪些块就列哪些，不在这里写死。
+
+def render_home(template, entries, blocks, switch_template, notice):
+    """站点首页：讲清这条总线的形状，再把已收录的映射列出去处。
+
+    首页不依赖任何单个寄存器映射，所以先渲染它；映射清单来自 data/，
+    收录了哪些就列哪些，不在这里写死。
     """
     spec = blocks[0][0] if blocks else HOME_SPEC_FALLBACK
     values = {
@@ -358,7 +362,7 @@ def render_home(template, entries, blocks, switch_template, notice):
         "notice": notice,
     }
     copy = Copy(entries, values)
-    title_zh, title_en = plain(copy.pair("home.title")[0]), plain(copy.pair("home.title")[1])
+    title_zh, title_en = titles(copy, "home.title")
     values["lang_switch"] = render(
         copy.expand(switch_template),
         {
@@ -374,7 +378,7 @@ def render_home(template, entries, blocks, switch_template, notice):
 
 
 def render_home_blocks(copy, blocks):
-    """已收录的块：一个块一行，链接到它自己的索引页。
+    """已收录的映射：一个一行，链接到它自己的索引页。
 
     字节数取自 document["size"]，不写进文案：数据变了文案不该跟着错。
     """
@@ -400,7 +404,6 @@ def render_home_blocks(copy, blocks):
             )
         )
     return "\n    ".join(items)
-
 
 
 def build(data_dir, dist_dir, site_dir, schema_dir):
