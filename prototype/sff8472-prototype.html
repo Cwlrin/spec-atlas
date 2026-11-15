@@ -1,0 +1,936 @@
+<!doctype html>
+<!--
+  PROTOTYPE — throwaway code, not production.
+  Question: 哪种萌系视觉语言能同时扛住「协议介绍 + 256 字节寄存器地图 + 版本差异 + 中英对照」?
+  Four variants on one route, switchable via ?variant=B|J|E|M.
+    B = 软糖卡片   J = 水彩静蓝   E = 极简萌   M = 初音未来
+  Run: 双击打开即可,无构建、无依赖、无持久化。
+-->
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PROTOTYPE · SFF-8472 四种萌系布局</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700&family=JetBrains+Mono:wght@400;700&family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+SC:wght@500;700&family=Silkscreen&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after { box-sizing:border-box; }
+  html,body { margin:0; }
+  body { min-height:100vh; }
+  .proto-badge { position:fixed; top:10px; left:10px; z-index:9998; font:700 10px/1 "JetBrains Mono", monospace; letter-spacing:.12em;
+    background:#111; color:#7CFFB2; padding:6px 9px; border-radius:4px; box-shadow:0 4px 14px rgba(0,0,0,.3); pointer-events:none; }
+  .en { font-style:normal; display:block; opacity:.62; font-size:.82em; font-weight:400; letter-spacing:0; }
+  .enin { display:inline; margin-left:5px; font-style:normal; opacity:.55; font-size:.86em; font-weight:400; }
+  .switcher { position:fixed; left:50%; bottom:18px; transform:translateX(-50%); z-index:9999; display:flex; align-items:center; gap:10px;
+    background:#101014; color:#F4F4F6; border:1px solid #34343C; border-radius:999px; padding:8px 10px 8px 14px;
+    box-shadow:0 16px 40px -12px rgba(0,0,0,.65); font:500 13px/1.2 "Noto Sans SC", system-ui, sans-serif; }
+  .switcher .sw-btn { all:unset; cursor:pointer; width:26px; height:26px; border-radius:50%; display:grid; place-items:center; background:#26262E; color:#fff; font-size:14px; }
+  .switcher .sw-btn:hover { background:#3A3A46; }
+  .switcher .sw-label { min-width:196px; text-align:center; }
+  .switcher .sw-label b { color:#7CFFB2; }
+  .switcher .sw-state { font:400 11px "JetBrains Mono", monospace; color:#8E8E9C; border-left:1px solid #34343C; padding-left:10px; }
+
+
+  /* ================= B 软糖卡片 ================= */
+  body.vB { background:
+      radial-gradient(circle at 12% 6%, #FFE1F0 0, transparent 44%),
+      radial-gradient(circle at 88% 2%, #E4EDFF 0, transparent 40%),
+      radial-gradient(circle at 50% 100%, #E8F9F0 0, transparent 46%), #FFF7FB;
+    color:#4A4453; font-family:"Noto Sans SC", system-ui, sans-serif; }
+  .bWrap { max-width:1180px; margin:0 auto; padding:26px 22px 140px; }
+  .bTop { position:sticky; top:12px; z-index:30; display:flex; align-items:center; gap:12px; flex-wrap:wrap; padding-right:132px;
+    background:rgba(255,247,251,.86); backdrop-filter:blur(12px); border:2px solid #fff; border-radius:999px;
+    padding:9px 12px 9px 20px; box-shadow:0 18px 40px -28px rgba(255,158,196,1); }
+  .bBrand { font:700 19px/1 "Baloo 2", "Noto Sans SC", sans-serif; }
+  .bBrand i { font-style:normal; color:#FF7EB0; }
+  .bNav { display:flex; gap:2px; }
+  .bNav button { all:unset; cursor:pointer; padding:6px 10px; border-radius:999px; font:500 12px/1.2 "Noto Sans SC", sans-serif; color:#9A8CA4; }
+  .bNav button:hover { color:#FF7EB0; }
+  .bSeg { display:flex; gap:4px; padding:4px; background:#FFF0F6; border-radius:999px; margin-left:auto; }
+  .bSeg + .bSeg { margin-left:0; }
+  .bSeg button { all:unset; cursor:pointer; padding:6px 13px; border-radius:999px; font:500 12px/1.2 "Noto Sans SC", sans-serif; color:#9A8CA4; }
+  .bSeg button.on { background:#fff; color:#4A4453; box-shadow:0 6px 14px -8px rgba(154,140,164,.9); }
+  .bHero { position:relative; overflow:hidden; margin:22px 0 26px; padding:38px 36px 34px; border-radius:34px; border:2px solid #fff;
+    background:linear-gradient(133deg,#FFEAF4 0%,#F3EFFF 52%,#E7F8F1 100%); box-shadow:0 28px 56px -38px rgba(255,140,186,1); }
+  .bBlob { position:absolute; border-radius:50%; filter:blur(26px); opacity:.6; pointer-events:none; }
+  .bBlob.b1 { width:190px; height:190px; right:-30px; top:-60px; background:#FFC7E3; }
+  .bBlob.b2 { width:150px; height:150px; right:120px; bottom:-70px; background:#C9E4FF; }
+  .bHero h1 { position:relative; margin:0 0 8px; font:700 40px/1.1 "Baloo 2", "Noto Sans SC", sans-serif; letter-spacing:-.01em; }
+  .bHero p { position:relative; margin:0; max-width:46ch; font-size:14px; line-height:1.85; color:#6D6275; }
+  .bStats { position:relative; display:flex; gap:10px; flex-wrap:wrap; margin-top:20px; }
+  .bPill { display:inline-flex; align-items:baseline; gap:7px; background:rgba(255,255,255,.72); border:2px solid #fff;
+    border-radius:999px; padding:7px 15px; font-size:12px; color:#6D6275; }
+  .bPill b { font:700 15px/1 "Baloo 2", sans-serif; color:#FF7EB0; }
+  .bSec { margin-top:30px; scroll-margin-top:88px; }
+  .bSec h2 { display:flex; align-items:center; gap:10px; margin:0 0 14px; font:700 19px/1.2 "Noto Sans SC", sans-serif; }
+  .bSec h2 span { font:500 10px/1 "JetBrains Mono", monospace; letter-spacing:.14em; color:#B6A9BE; }
+  .bCard { background:#fff; border:2px solid #FFF0F6; border-radius:26px; padding:20px 22px; box-shadow:0 18px 34px -26px rgba(74,68,83,.55); }
+  .bWhy { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+  .bWhy h3 { display:flex; align-items:center; gap:9px; margin:0 0 8px; font:700 14px/1.4 "Noto Sans SC", sans-serif; }
+  .bNum { width:22px; height:22px; border-radius:50%; background:#FFE3F0; color:#FF7EB0; display:grid; place-items:center; font:700 11px/1 "Baloo 2", sans-serif; flex:none; }
+  .bWhy p { margin:0; font-size:12.5px; line-height:1.8; color:#8B8093; }
+  .bWhy b { color:#6D6275; }
+  .bBusRow { display:flex; align-items:center; gap:12px; margin-top:18px; flex-wrap:wrap; }
+  .bChipBox { background:#fff; border:2px solid #FFE9F2; border-radius:18px; padding:10px 16px; font-size:11.5px; color:#8B8093; }
+  .bChipBox b { display:block; font:700 13px/1.3 "Baloo 2", sans-serif; color:#FF7EB0; }
+  .bWire { flex:1; height:4px; border-radius:2px; background:repeating-linear-gradient(90deg,#FFC7E3 0 8px, transparent 8px 16px); min-width:60px; }
+  .bUnits { display:flex; flex-wrap:wrap; gap:8px; margin-top:16px; }
+  .bUnit { display:flex; align-items:baseline; gap:6px; background:#fff; border:2px solid #FFF0F6; border-radius:999px;
+    padding:6px 13px; font-size:11.5px; color:#6D6275; }
+  .bUnit b { font:700 12px/1 "JetBrains Mono", monospace; color:#7C6BB8; }
+  .bGrid { display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:16px; }
+  .bReg h3 { display:flex; align-items:center; gap:9px; margin:0 0 6px; font:600 14px/1.4 "Noto Sans SC", sans-serif; }
+  .bReg .byte { font:700 10px/1 "JetBrains Mono", monospace; padding:4px 8px; border-radius:999px; background:#F3EFFF; color:#7C6BB8; }
+  .bReg .ds { margin:0; font-size:12px; line-height:1.7; color:#8B8093; }
+  .bReg .chg { display:inline-block; margin-top:9px; font:600 10px/1 "Noto Sans SC", sans-serif; padding:4px 9px; border-radius:999px; background:#FFF0D6; color:#C08A2E; }
+  .bMap { display:grid; grid-template-columns:repeat(16, 1fr); gap:4px; max-width:760px; margin:0 auto; }
+  .bCell { aspect-ratio:1; border-radius:6px; border:1px solid rgba(255,255,255,.9); background:#F6F2FA;
+    font:400 8px/1 "JetBrains Mono", monospace; color:#B6A9BE; display:grid; place-items:center; }
+  .bCell.z0 { background:#FFD9E7; color:#B9638A; }
+  .bCell.z1 { background:#E3DAFB; color:#7C6BB8; }
+  .bCell.z2 { background:#D8F3E4; color:#4E8A6B; }
+  .bCell.z3 { background:#D9EDFB; color:#4F7FA3; }
+  .bCell.z4 { background:#FFF1C9; color:#A98936; }
+  .bCell.z5 { background:#FBE0DA; color:#AE6A5C; }
+  .bCell.z6 { background:#EDEAF2; color:#A79DB0; }
+  .bCell.chg { box-shadow:0 0 0 2px #FF7EB0 inset; }
+  .bLegend { display:flex; flex-wrap:wrap; gap:6px 14px; margin-top:14px; font-size:11px; color:#8B8093; }
+  .bLegend i { display:inline-block; width:10px; height:10px; border-radius:3px; margin-right:6px; }
+  .bDiff { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  .bDiff .bCard.old { opacity:.74; }
+  .bDiff h3 { margin:0 0 10px; font:700 13px/1.3 "Noto Sans SC", sans-serif; }
+  .bDiff ul { margin:0; padding:0; list-style:none; }
+  .bDiff li { font-size:12px; line-height:1.7; padding:7px 0 7px 20px; position:relative; border-bottom:1px dashed #F2ECF5; }
+  .bDiff li::before { content:""; position:absolute; left:3px; top:12px; width:7px; height:7px; border-radius:50%; background:#E7DCF0; }
+  .bDiff .new li::before { background:#FF9EC4; }
+  .bDiff .new li.hot { background:linear-gradient(90deg, transparent, #FFF3F8 22%, #FFF3F8 78%, transparent); border-radius:8px; }
+  .bDiff .tag { font:600 9px/1 "JetBrains Mono", monospace; letter-spacing:.08em; color:#B6A9BE; margin-right:6px; }
+  .bDelta { display:flex; align-items:center; gap:8px; margin:0 0 14px; font-size:12px; color:#8B8093; }
+  .bDelta b { font:700 22px/1 "Baloo 2", sans-serif; color:#FF7EB0; }
+  .bStat { display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:14px; }
+  .bRing { width:74px; height:74px; border-radius:50%; display:grid; place-items:center; flex:none; background:conic-gradient(#FF9EC4 0 var(--p), #FFEAF3 var(--p) 100%); }
+  .bRing i { width:58px; height:58px; border-radius:50%; background:#fff; display:grid; place-items:center; font:700 13px/1 "JetBrains Mono", monospace; font-style:normal; }
+  .bStatCard { display:flex; align-items:center; gap:13px; }
+  .bStatCard .k { font-size:12px; color:#8B8093; }
+  .bStatCard .v { font:700 15px/1.3 "JetBrains Mono", monospace; }
+  .bStatCard .th { font:400 10px/1.4 "JetBrains Mono", monospace; color:#B6A9BE; }
+
+
+
+  /* ================= E 极简萌 ================= */
+  body.vE { background:#FCFCFD; color:#22252B; font-family:"Noto Sans SC", system-ui, sans-serif; }
+  .eTop { position:sticky; top:0; z-index:20; display:flex; align-items:center; gap:18px; padding-right:132px; max-width:920px; margin:0 auto;
+    padding:15px 24px; background:rgba(252,252,253,.9); backdrop-filter:blur(8px); border-bottom:1px solid #EEF0F4; }
+  .eBrand { font:600 13px/1 "Noto Sans SC", sans-serif; }
+  .eBrand i { font-style:normal; color:#7C9CFF; }
+  .eNav { display:flex; gap:15px; margin-left:auto; }
+  .eNav button { all:unset; cursor:pointer; font:500 12px/1 "Noto Sans SC", sans-serif; color:#98A0AD; }
+  .eNav button:hover { color:#22252B; }
+  .eCtl { display:flex; gap:2px; }
+  .eT { all:unset; cursor:pointer; padding:4px 8px; font:500 11px/1 "JetBrains Mono", monospace; color:#9AA1AE; border-bottom:1px solid transparent; }
+  .eT.on { color:#22252B; border-bottom-color:#22252B; }
+  .eW { max-width:920px; margin:0 auto; padding:0 24px 140px; }
+  .eHero { padding:66px 0 42px; }
+  .eHero h1 { font:600 54px/1.08 "Noto Sans SC", sans-serif; letter-spacing:-.03em; margin:0 0 18px; }
+  .eHero h1 em { font-style:normal; color:#7C9CFF; }
+  .eHero p { max-width:52ch; font-size:15px; line-height:1.95; color:#6B7280; margin:0; }
+  .eSubEn { margin:-8px 0 16px !important; font:500 14px/1.6 "JetBrains Mono", monospace !important; letter-spacing:.04em; color:#B4BAC6 !important; }
+  .eSec { border-top:1px solid #EEF0F4; padding:36px 0 32px; scroll-margin-top:70px; }
+  .eLabel { display:flex; gap:10px; align-items:baseline; margin-bottom:16px; font:500 10px/1 "JetBrains Mono", monospace; letter-spacing:.2em; color:#B4BAC6; }
+  .eLabel b { font:600 13px/1 "Noto Sans SC", sans-serif; letter-spacing:0; color:#22252B; }
+  .eLead { font-size:14px; line-height:2; color:#4B5261; max-width:66ch; margin:0 0 20px; }
+  .eGrid3 { display:grid; grid-template-columns:repeat(3,1fr); gap:22px; }
+  .eGrid3 h4 { margin:0 0 6px; font:600 13px/1.4 "Noto Sans SC", sans-serif; }
+  .eGrid3 p { margin:0; font-size:12.5px; line-height:1.9; color:#707888; }
+  .eRow { display:grid; grid-template-columns:82px 1fr; gap:18px; padding:13px 0; border-bottom:1px solid #F1F3F7; }
+  .eAddr { font:600 11px/1.9 "JetBrains Mono", monospace; color:#A6ADBB; }
+  .eRow h3 { margin:0; font:600 14px/1.5 "Noto Sans SC", sans-serif; }
+  .eRow h3 span { font:400 11.5px/1.5 "JetBrains Mono", monospace; color:#A6ADBB; margin-left:8px; }
+  .eRow p { margin:4px 0 0; font-size:12.5px; line-height:1.85; color:#707888; }
+  .eDots { display:grid; grid-template-columns:repeat(32, 1fr); gap:4px; margin:16px 0 14px; }
+  .eDot { aspect-ratio:1; border-radius:50%; background:#E9ECF2; }
+  .eDot.z1 { background:#DCE4FF; } .eDot.z2 { background:#DFF3E8; } .eDot.z3 { background:#FFE6EF; } .eDot.chg { background:#7C9CFF; }
+  .eLegend { display:flex; flex-wrap:wrap; gap:6px 18px; font:500 11px/1.6 "Noto Sans SC", sans-serif; color:#8A909C; }
+  .eLegend i { display:inline-block; width:7px; height:7px; border-radius:50%; margin-right:6px; }
+  .eStats { display:grid; grid-template-columns:repeat(5, 1fr); gap:18px; }
+  .eStat .k { font-size:11px; color:#8A909C; }
+  .eStat .v { font:600 17px/1.5 "JetBrains Mono", monospace; }
+  .eDiff { display:grid; grid-template-columns:1fr 1fr; gap:34px; }
+  .eDiff h3 { margin:0 0 10px; font:500 10px/1 "JetBrains Mono", monospace; letter-spacing:.16em; color:#B4BAC6; }
+  .eItem { font-size:12.5px; line-height:1.8; padding:8px 0; border-bottom:1px solid #F1F3F7; color:#4B5261; }
+  .eItem.chg { color:#22252B; } .eItem.add { color:#2F8F5B; }
+  .eMascot { position:fixed; right:20px; bottom:92px; width:54px; height:54px; border-radius:50%;
+    background:radial-gradient(circle at 35% 30%, #FFE7EF, #FFC7DA); display:grid; place-items:center;
+    font:600 10px/1.2 "Noto Sans SC", sans-serif; color:#B24B6E; box-shadow:0 10px 24px -12px rgba(178,75,110,.65); }
+  .vE .tref { color:#5B7CFA; }
+  body.vE .sheetCard { background:#fff; border:1px solid #E7EAF0; border-radius:14px; box-shadow:0 30px 70px -30px rgba(34,37,43,.35); color:#22252B; }
+  body.vE .sheetClose { background:#F1F3F7; color:#4B5261; }
+
+
+  /* ================= J 水彩静蓝 ================= */
+  body.vJ { background:#F7FAFC; color:#2C3A45; font-family:"Noto Serif SC", serif; overflow-x:hidden; }
+  body.vJ::before { content:""; position:fixed; inset:-18% -12%; z-index:0; pointer-events:none;
+    background:
+      radial-gradient(40% 30% at 22% 16%, rgba(168,201,222,.55), transparent 70%),
+      radial-gradient(36% 28% at 78% 24%, rgba(243,233,242,.7), transparent 70%),
+      radial-gradient(46% 34% at 58% 82%, rgba(214,236,226,.6), transparent 70%);
+    animation: jDrift 26s ease-in-out infinite alternate; }
+  @keyframes jDrift { from { transform:translate3d(-1%, -1%, 0) scale(1); } to { transform:translate3d(1.6%, 1.2%, 0) scale(1.04); } }
+  .jWrap { position:relative; z-index:1; max-width:900px; margin:0 auto; padding:56px 28px 140px; }
+  .jHead { text-align:center; padding-bottom:26px; border-bottom:1px solid #D6E3EE; margin-bottom:38px; }
+  .jKick { font:500 9px/1 "JetBrains Mono", monospace; letter-spacing:.42em; color:#8FA6B5; }
+  .jHead h1 { font:500 44px/1.3 "Noto Serif SC", serif; letter-spacing:.16em; margin:20px 0 10px; color:#22313C; }
+  .jHead p { margin:0; font-size:11.5px; letter-spacing:.26em; color:#8FA6B5; }
+  .jCtl { display:flex; justify-content:center; gap:16px; margin-top:22px; flex-wrap:wrap; }
+  .jChip { all:unset; cursor:pointer; font:500 10px/1 "JetBrains Mono", monospace; letter-spacing:.18em;
+    color:#9DB1BF; padding:2px 1px 4px; border-bottom:1px solid transparent; }
+  .jChip.on { color:#3C6B86; border-bottom-color:#3C6B86; }
+  .jSec { margin:0 0 48px; }
+  .jLabel { display:flex; align-items:baseline; gap:12px; margin-bottom:15px;
+    font:500 10px/1 "JetBrains Mono", monospace; letter-spacing:.3em; color:#A7BBC8; }
+  .jLabel b { font:500 13px/1 "Noto Serif SC", serif; letter-spacing:.12em; color:#3C6B86; }
+  .jLead { font-size:13.5px; line-height:2.2; color:#4B5D6A; margin:0 0 16px; }
+  .jCols3 { display:grid; grid-template-columns:repeat(3, 1fr); gap:26px; }
+  .jCols3 h4 { margin:0 0 6px; font:600 12px/1.6 "Noto Sans SC", sans-serif; color:#2C3A45; }
+  .jCols3 p { margin:0; font-size:11.5px; line-height:1.95; color:#6E8494; }
+  .jRow { display:grid; grid-template-columns:70px 1fr; gap:16px; padding:13px 2px; border-bottom:1px solid #E4EDF3; }
+  .jRow:hover { background:linear-gradient(90deg, rgba(214,231,242,.55), transparent 72%); }
+  .jAddr { font:400 10px/1.9 "JetBrains Mono", monospace; color:#9DB1BF; }
+  .jRow h3 { margin:0; font:500 14px/1.6 "Noto Serif SC", serif; color:#22313C; }
+  .jRow h3 span { font:400 10.5px/1.6 "JetBrains Mono", monospace; color:#9DB1BF; margin-left:8px; }
+  .jRow p { margin:3px 0 0; font-size:11.5px; line-height:1.85; color:#6E8494; }
+  .jMap { display:grid; grid-template-columns:repeat(16, 1fr); gap:5px; max-width:560px; margin:8px auto 14px; }
+  .jDot { aspect-ratio:1; border-radius:50%; background:#E9F1F7; }
+  .jDot.z1 { background:#DCE9F4; } .jDot.z2 { background:#DFEFE8; } .jDot.z3 { background:#E7E4F1; } .jDot.z5 { background:#F6E6EC; }
+  .jDot.chg { box-shadow:0 0 0 1.5px #5C8FAE inset; }
+  .jNote { text-align:center; font-size:11px; letter-spacing:.14em; color:#9DB1BF; }
+  .jStats { display:flex; border-top:1px solid #D6E3EE; border-bottom:1px solid #D6E3EE; }
+  .jStat { flex:1; padding:15px 8px; text-align:center; border-right:1px solid #E4EDF3; }
+  .jStat:last-child { border-right:none; }
+  .jStat b { display:block; font:400 16px/1.5 "JetBrains Mono", monospace; color:#3C6B86; }
+  .jStat span { font-size:10.5px; letter-spacing:.1em; color:#8FA6B5; }
+  .jDiff { display:grid; grid-template-columns:1fr 1fr; }
+  .jDiff > div { padding:0 22px; }
+  .jDiff > div:first-child { border-right:1px solid #D6E3EE; padding-left:0; }
+  .jDiff h3 { font:500 9px/1 "JetBrains Mono", monospace; letter-spacing:.26em; color:#A7BBC8; margin:0 0 10px; }
+  .jDiff p { margin:0 0 9px; font-size:11.5px; line-height:1.9; color:#5A6D7B; }
+  .jDiff .hot { background:linear-gradient(transparent 62%, rgba(207,227,240,.9) 62%); }
+  .vJ .tref { color:#3C6B86; border-bottom:1px solid rgba(60,107,134,.45); }
+  body.vJ .sheetCard { background:#FBFDFE; border:1px solid #D6E3EE; color:#2C3A45; font-family:"Noto Serif SC", serif; }
+  body.vJ .sheetClose { background:#EDF3F8; color:#4B5D6A; }
+  body.vJ .tblIdx button { background:#fff; border:1px solid #D6E3EE; color:#3C6B86; }
+
+
+  /* ================= M 初音未来（浅色） ================= */
+  body.vM { color:#0E2A2A; font-family:"Noto Sans SC", system-ui, sans-serif; background:#F8FEFD; }
+  body.vM::before { content:""; position:fixed; inset:0; z-index:0; pointer-events:none;
+    background:
+      radial-gradient(55% 38% at 86% -6%, rgba(57,197,187,.24), transparent 70%),
+      radial-gradient(46% 32% at 6% 16%, rgba(0,229,255,.14), transparent 70%); }
+  .mHead { position:relative; z-index:1; max-width:1120px; margin:0 auto; padding:56px 24px 32px; overflow:hidden; }
+  .m39 { position:absolute; right:-12px; top:-40px; font:800 210px/1 "Noto Sans SC", sans-serif; letter-spacing:-.06em;
+    color:transparent; -webkit-text-stroke:2px rgba(57,197,187,.34); pointer-events:none; }
+  .mKick { font:600 10px/1 "JetBrains Mono", monospace; letter-spacing:.42em; color:#1D8F89; }
+  .mHead h1 { position:relative; margin:14px 0 8px; font:800 46px/1.1 "Noto Sans SC", sans-serif; letter-spacing:-.02em;
+    background:linear-gradient(90deg, #0E2A2A, #2AA7A0 55%, #39C5BB); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .mHead p { position:relative; margin:0; font:500 10px/1.6 "JetBrains Mono", monospace; letter-spacing:.24em; color:#4E8C89; }
+  .mBand { height:12px; margin-top:20px;
+    background:repeating-linear-gradient(135deg, #39C5BB 0 10px, transparent 10px 22px); opacity:.32; }
+  .mCtl { display:flex; gap:6px; flex-wrap:wrap; margin-top:18px; position:relative; }
+  .mChip { all:unset; cursor:pointer; padding:6px 13px; font:600 11px/1.2 "Noto Sans SC", sans-serif;
+    color:#1D8F89; border:1px solid rgba(57,197,187,.55); background:#fff;
+    clip-path:polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px); }
+  .mChip.on { background:#39C5BB; color:#fff; border-color:#39C5BB; }
+  .mWrapIn { position:relative; z-index:1; max-width:1120px; margin:0 auto; padding:0 24px 140px; }
+  .mSec { margin-top:36px; padding-top:16px; border-top:1px solid rgba(57,197,187,.32); }
+  .mSec h2 { display:flex; align-items:baseline; gap:12px; margin:0 0 12px; font:800 17px/1.3 "Noto Sans SC", sans-serif; color:#0E2A2A; }
+  .mSec h2 em { font:600 9px/1 "JetBrains Mono", monospace; letter-spacing:.26em; color:#1D8F89; font-style:normal; }
+  .mLead { font-size:13px; line-height:2.05; color:#3E6E6B; margin:0 0 14px; max-width:72ch; }
+  .mCols3 { display:grid; grid-template-columns:repeat(3, 1fr); gap:20px; }
+  .mCols3 h4 { margin:0 0 5px; font:700 12px/1.5 "Noto Sans SC", sans-serif; color:#12807A; }
+  .mCols3 p { margin:0; font-size:11.5px; line-height:1.9; color:#527F7C; }
+  .mRow { display:grid; grid-template-columns:76px 1fr; gap:14px; padding:9px 0; border-bottom:1px solid rgba(57,197,187,.2); }
+  .mRow b { font:600 10px/2 "JetBrains Mono", monospace; color:#1D8F89; }
+  .mRow h3 { margin:0; font:700 12.5px/1.5 "Noto Sans SC", sans-serif; color:#0E2A2A; }
+  .mRow h3 span { font:400 10px/1.5 "JetBrains Mono", monospace; color:#6FA6A3; margin-left:7px; }
+  .mRow p { margin:2px 0 0; font-size:11.5px; line-height:1.8; color:#527F7C; }
+  .mMap { display:grid; grid-template-columns:repeat(16, 1fr); gap:3px; }
+  .mCell { aspect-ratio:1; display:grid; place-items:center; background:#EAF9F7; border:1px solid #CFEDE9;
+    font:500 7px/1 "JetBrains Mono", monospace; color:#6FA6A3; }
+  .mCell.z1 { background:#DFF5FB; } .mCell.z2 { background:#D3F1EC; }
+  .mCell.z3 { background:#FDE9F1; } .mCell.z5 { background:#FBD9E8; }
+  .mCell.chg { background:#39C5BB; color:#fff; border-color:#39C5BB; }
+  .mMeters { display:flex; gap:10px; flex-wrap:wrap; }
+  .mMeter { border:1px solid rgba(57,197,187,.45); padding:8px 12px; min-width:124px; background:#fff; }
+  .mMeter b { display:block; font:700 15px/1.4 "JetBrains Mono", monospace; color:#0E5F5B; }
+  .mMeter span { font-size:10px; letter-spacing:.06em; color:#6FA6A3; }
+  .mMeter i { display:block; height:3px; margin-top:6px; background:#39C5BB; }
+  .mDiff { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+  .mDiff h3 { font:600 9px/1 "JetBrains Mono", monospace; letter-spacing:.24em; color:#1D8F89; margin:0 0 8px; }
+  .mDiff p { margin:0 0 7px; font-size:11.5px; line-height:1.8; color:#3E6E6B; }
+  .vM .tref { color:#1D8F89; border-bottom:1px solid rgba(57,197,187,.7); }
+  body.vM .sheetCard { background:#fff; border:1px solid rgba(57,197,187,.5); color:#0E2A2A; }
+  body.vM .sheetClose { background:rgba(57,197,187,.16); color:#12807A; }
+  body.vM .tblIdx button { background:#fff; border:1px solid rgba(57,197,187,.45); color:#1D8F89; }
+  body.vM .tbl td, body.vM .tbl th { border-bottom-color:rgba(57,197,187,.18); }
+  body.vM .tbl td.k { color:#1D8F89; }
+
+  /* ---- shared: table refs & sheet ---- */
+  .tref { all:unset; cursor:pointer; font:inherit; color:#C96F5A; border-bottom:1px dashed currentColor; padding:0 1px; }
+  .sheetWrap { position:fixed; inset:0; z-index:9996; display:none; align-items:center; justify-content:center;
+    padding:32px; background:rgba(20,18,31,.42); backdrop-filter:blur(3px); }
+  .sheetWrap.open { display:flex; }
+  .sheetCard { width:min(820px, 100%); max-height:82vh; overflow:auto; padding:24px 26px; }
+  .sheetHead { display:flex; align-items:baseline; gap:12px; margin-bottom:12px; }
+  .sheetHead h3 { margin:0; font-size:16px; }
+  .sheetHead span { font:600 10px/1 "JetBrains Mono", monospace; letter-spacing:.1em; opacity:.5; }
+  .sheetClose { all:unset; margin-left:auto; cursor:pointer; width:28px; height:28px; border-radius:50%;
+    display:grid; place-items:center; font-size:16px; align-self:flex-start; }
+  .tbl { width:100%; border-collapse:collapse; font-size:12.5px; line-height:1.65; }
+  .tbl th, .tbl td { text-align:left; padding:7px 9px; border-bottom:1px solid rgba(0,0,0,.07); vertical-align:top; }
+  .tbl th { font:600 9px/1.2 "JetBrains Mono", monospace; letter-spacing:.1em; opacity:.55; text-transform:uppercase; }
+  .tbl td.k { font-family:"JetBrains Mono", monospace; font-weight:700; white-space:nowrap; }
+  .sheetNote { margin:12px 0 0; font-size:12px; line-height:1.75; opacity:.7; }
+  .tblIdx { display:flex; flex-wrap:wrap; gap:6px; margin:0; }
+  .tblIdx button { all:unset; cursor:pointer; padding:4px 9px; border-radius:3px; font:600 11px/1 "JetBrains Mono", monospace; }
+  .tblIdx .miss { font-size:11px; line-height:1.7; opacity:.6; font-family:"JetBrains Mono", monospace; }
+
+  body.vK .tbl td, body.vK .tbl th, body.vM .tbl td, body.vM .tbl th { border-bottom-color:rgba(255,255,255,.09); }
+  body.vJ .tbl td.k { color:#3C6B86; }
+  body.vK .tbl td.k { color:#FF8FC4; }
+  body.vM .tbl td.k { color:#39C5BB; }
+
+  body.vB .sheetCard { background:#fff; border:2px solid #FFF0F6; border-radius:26px;
+    box-shadow:0 30px 70px -28px rgba(255,140,186,.95); color:#4A4453; }
+  body.vB .sheetClose { background:#FFF0F6; color:#FF7EB0; }
+  body.vB .tblIdx button { background:#fff; border:2px solid #FFF0F6; color:#7C6BB8; }
+  body.vE .tblIdx button { background:#fff; border:1px solid #E7EAF0; color:#5B7CFA; }
+  body.vF .tblIdx button { background:#fff; border:1.5px solid #2E2A24; color:#2E2A24; }
+  body.vJ .tblIdx button { background:#fff; border:1px solid #D6E3EE; color:#3C6B86; }
+
+  .skin { position:fixed; right:14px; top:14px; z-index:10000; font-family:"Noto Sans SC", system-ui, sans-serif; }
+  .skinBtn { all:unset; cursor:pointer; display:inline-flex; align-items:center; gap:7px; padding:10px 16px; border-radius:999px;
+    background:rgba(18,18,26,.92); color:#fff; font:600 12.5px/1 "Noto Sans SC", sans-serif;
+    box-shadow:0 16px 32px -14px rgba(0,0,0,.6), 0 0 0 3px rgba(255,255,255,.55);
+    backdrop-filter:blur(8px); }
+  .skinTip { position:absolute; right:0; top:54px; white-space:nowrap; padding:7px 12px; border-radius:10px;
+    background:#fff; color:#33364D; font:500 11.5px/1.3 "Noto Sans SC", sans-serif; border:1px solid #E8E9F2;
+    box-shadow:0 16px 30px -18px rgba(0,0,0,.45); display:none; }
+  .skinTip.show { display:block; }
+  .skinTip::before { content:""; position:absolute; right:16px; top:-5px; width:8px; height:8px; background:#fff;
+    border-left:1px solid #E8E9F2; border-top:1px solid #E8E9F2; transform:rotate(45deg); }
+  .skinBtn:hover { background:#2B2B39; }
+  .skinPanel { position:absolute; right:0; top:52px; width:252px; padding:10px; border-radius:16px; background:#fff;
+    border:1px solid #ECECF2; box-shadow:0 26px 54px -22px rgba(0,0,0,.4); display:none; }
+  .skinPanel.open { display:block; }
+  .skinTitle { font:600 9.5px/1 "JetBrains Mono", monospace; letter-spacing:.18em; color:#A2A8B6; padding:4px 8px 9px; }
+  .skinOpt { all:unset; box-sizing:border-box; cursor:pointer; display:grid; grid-template-columns:20px 1fr; gap:10px;
+    align-items:center; width:100%; padding:9px 10px; border-radius:10px; }
+  .skinOpt:hover { background:#F7F7FB; }
+  .skinOpt.on { background:#F3F5FF; box-shadow:inset 0 0 0 1px #DEE4FF; }
+  .skinOpt i { width:18px; height:18px; border-radius:50%; border:2px solid #fff; box-shadow:0 0 0 1px rgba(0,0,0,.1); }
+  .skinOpt b { display:block; font:600 12.5px/1.25 "Noto Sans SC", sans-serif; color:#22252B; }
+  .skinOpt em { display:block; margin-top:2px; font:400 10.5px/1.45 "Noto Sans SC", sans-serif; color:#8A909C; font-style:normal; }
+  .skinHint { margin-top:6px; padding:8px; border-top:1px solid #F1F2F6; font:400 10px/1.6 "Noto Sans SC", sans-serif; color:#A2A8B6; }
+
+</style>
+</head>
+<body class="vA">
+<div class="proto-badge">PROTOTYPE</div>
+<div id="app"></div>
+<div id="sheet" class="sheetWrap"></div>
+<div class="skin" id="skin">
+  <button class="skinBtn" data-act="skinToggle" aria-label="换肤">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="9" cy="10" r="1.3" fill="currentColor" stroke="none"/><circle cx="15" cy="10" r="1.3" fill="currentColor" stroke="none"/><circle cx="12" cy="15" r="1.3" fill="currentColor" stroke="none"/></svg>
+    <span>换肤</span>
+  </button>
+  <div class="skinPanel" id="skinPanel">
+    <div class="skinTitle">选择皮肤</div>
+    <button class="skinOpt" data-act="skin" data-val="B"><i style="background:#FF9EC4"></i><span><b>软糖卡片</b><em>卡片流 · 首屏氛围</em></span></button>
+    <button class="skinOpt" data-act="skin" data-val="J"><i style="background:#5C8FAE"></i><span><b>水彩静蓝</b><em>最静 · 适合长文</em></span></button>
+    <button class="skinOpt" data-act="skin" data-val="E"><i style="background:#7C9CFF"></i><span><b>极简萌</b><em>文档感 · 点阵地图</em></span></button>
+    <button class="skinOpt" data-act="skin" data-val="M"><i style="background:#39C5BB"></i><span><b>初音未来</b><em>海报感 · 斜切硬边</em></span></button>
+    <div class="skinHint">皮肤会记在本机，下次打开还是这一套。</div>
+  </div>
+  <div class="skinTip" id="skinTip">点这里换肤 · 四套可选</div>
+</div>
+
+<script>
+var A0 = [
+  {a:"00", len:1, en:"Identifier", zh:"标识符", dEn:"Transceiver type (see Table 5-1)", dZh:"收发器类型（见表 5-1）"},
+  {a:"01", len:1, en:"Ext. Identifier", zh:"扩展标识符", dEn:"Extended identifier for transceiver type (see Table 5-2)", dZh:"收发器类型的扩展标识（见表 5-2）"},
+  {a:"02", len:1, en:"Connector", zh:"连接器", dEn:"Connector type code (see SFF-8024)", dZh:"连接器类型代码（见 SFF-8024）"},
+  {a:"03-10", len:8, en:"Transceiver", zh:"收发器代码", dEn:"Electrical or optical compatibility codes (see Table 5-3)", dZh:"电气或光学兼容性代码（见表 5-3）"},
+  {a:"11", len:1, en:"Encoding", zh:"编码", dEn:"High speed serial encoding algorithm (see SFF-8024)", dZh:"高速串行编码算法代码（见 SFF-8024）"},
+  {a:"12", len:1, en:"Signaling Rate, Nominal", zh:"标称信号速率", dEn:"Nominal signaling rate, units of 100 MBd", dZh:"标称信号速率，单位 100 MBd"},
+  {a:"13", len:1, en:"Rate Identifier", zh:"速率标识符", dEn:"Type of rate select functionality (see Table 5-6)", dZh:"速率选择功能类型（见表 5-6）", ch11:true},
+  {a:"14", len:1, en:"Length (SMF, km) / Copper Att.", zh:"长度（单模 km）或铜缆衰减", dEn:"SMF link length in km; or copper attenuation at 12.9 GHz in dB", dZh:"单模光纤长度，单位 km；或铜缆在 12.9 GHz 的衰减，单位 dB", ch12:true},
+  {a:"15", len:1, en:"Length (SMF) / Copper Att.", zh:"长度（单模 100 m）或铜缆衰减", dEn:"SMF link length in 100 m; or copper attenuation at 25.78 GHz in dB", dZh:"单模光纤长度，单位 100 m；或铜缆在 25.78 GHz 的衰减，单位 dB", ch12:true},
+  {a:"16", len:1, en:"Length (50 um, OM2)", zh:"长度（50 µm, OM2）", dEn:"Link length for 50 um OM2 fiber, units of 10 m", dZh:"50 µm OM2 光纤支持的长度，单位 10 m"},
+  {a:"19", len:1, en:"Length (OM3) / Add. cable", zh:"长度（OM3）或附加电缆长度", dEn:"OM3 link length in 10 m; or additional copper cable length", dZh:"OM3 长度（10 m）；或铜缆附加长度", ch12:true},
+  {a:"20-35", len:16, en:"Vendor name", zh:"厂商名称", dEn:"SFP vendor name (ASCII)", dZh:"SFP 厂商名称（ASCII）"},
+  {a:"40-55", len:16, en:"Vendor PN", zh:"厂商料号", dEn:"Vendor part number (ASCII)", dZh:"厂商产品料号（ASCII）"},
+  {a:"92", len:1, en:"Diagnostic Monitoring Type", zh:"诊断监测类型", dEn:"Indicates the type of diagnostic monitoring implemented", dZh:"指示实现的诊断监测类型（见表 8-5）"},
+  {a:"94", len:1, en:"SFF-8472 Compliance", zh:"合规版本", dEn:"Indicates which revision of SFF-8472 the transceiver complies with", dZh:"指示收发器符合 SFF-8472 的哪个修订版"}
+];
+
+var ZONES = [
+  {from:0,   to:55,  z:"z0", key:"th",  zh:"阈值", en:"A/W thresholds"},
+  {from:56,  to:94,  z:"z1", key:"cal", zh:"校准/增强", en:"Cal / enhanced"},
+  {from:95,  to:95,  z:"z1", key:"cc",  zh:"CC_DMI", en:"CC_DMI"},
+  {from:96,  to:105, z:"z2", key:"rt",  zh:"实时诊断量", en:"Real-time diag"},
+  {from:106, to:109, z:"z3", key:"opt", zh:"可选诊断量", en:"Optional diag"},
+  {from:110, to:111, z:"z3", key:"sc",  zh:"状态/控制", en:"Status/control"},
+  {from:112, to:117, z:"z5", key:"fl",  zh:"告警标志位", en:"A/W flags"},
+  {from:118, to:119, z:"z5", key:"ext", zh:"扩展状态", en:"Ext. status"},
+  {from:120, to:126, z:"z4", key:"vs",  zh:"厂商特定", en:"Vendor specific"},
+  {from:127, to:255, z:"z6", key:"rs",  zh:"保留", en:"Reserved"}
+];
+
+var CHANGED = { "12.4": [[56,91]], "11.4": [[40,55],[112,119]] };
+
+var DIAG = [
+  {zh:"温度", en:"Temperature", v:"41.2 °C", pct:52, th:"-5 … +75 °C"},
+  {zh:"供电电压", en:"Vcc", v:"3.31 V", pct:44, th:"3.00 … 3.60 V"},
+  {zh:"偏置电流", en:"TX Bias", v:"6.4 mA", pct:38, th:"1.0 … 12.0 mA"},
+  {zh:"发射光功率", en:"TX Power", v:"-2.1 dBm", pct:61, th:"-8.0 … 0.0 dBm"},
+  {zh:"接收光功率", en:"RX Power", v:"-3.8 dBm", pct:55, th:"-17.0 … 0.0 dBm"}
+];
+
+var UNITS = [
+  {zh:"温度", en:"Temperature", lsb:"1/256 °C", range:"-128 … +128 °C", note:"16 位补码，±3 °C"},
+  {zh:"供电电压", en:"Vcc", lsb:"100 µV", range:"0 … 6.55 V", note:"无符号，±3%"},
+  {zh:"偏置电流", en:"TX Bias", lsb:"2 µA", range:"0 … 131 mA", note:"无符号，±10%"},
+  {zh:"TX 光功率", en:"TX Power", lsb:"0.1 µW", range:"0 … 6.5535 mW", note:"无符号，±3 dB"},
+  {zh:"RX 光功率", en:"RX Power", lsb:"0.1 µW", range:"0 … 6.5535 mW", note:"OMA 或平均功率由 92.3 决定"},
+  {zh:"TEC 电流（可选）", en:"TEC Current", lsb:"0.1 mA", range:"-3276.8 … +3276.7 mA", note:"补码，仅内部校准定义"}
+];
+
+var DIFFS = [
+  {rev:"12.4", a:"全文", kind:"chg", zh:"术语：BR 改为 Signaling rate，Gb/s 改为 GBd",
+   en:"Terminology: BR -> Signaling rate, Gb/s -> GBd", oldZh:"BR（Bit Rate）、Gb/s", oldEn:"BR (Bit Rate), Gb/s"},
+  {rev:"12.4", a:"A0h 14", kind:"chg", zh:"长度字段改为同时承载铜缆在 12.9 GHz 的衰减",
+   en:"Byte 14 also carries copper attenuation at 12.9 GHz", oldZh:"Length (SMF, km)：只管单模长度", oldEn:"Length (SMF, km): SMF length only"},
+  {rev:"12.4", a:"A0h 15", kind:"chg", zh:"长度字段改为同时承载铜缆在 25.78 GHz 的衰减",
+   en:"Byte 15 also carries copper attenuation at 25.78 GHz", oldZh:"Length (SMF)：只管单模长度（100 m）", oldEn:"Length (SMF): SMF length only, 100 m"},
+  {rev:"12.4", a:"A2h 56-91", kind:"chg", zh:"改为「外部校准常数」或「附加增强特性」二选一",
+   en:"Bytes 56-91 serve external calibration constants or enhanced features", oldZh:"仅作为外部校准常数", oldEn:"External calibration constants only"},
+  {rev:"12.4", a:"A0h 19", kind:"chg", zh:"字段名称修改（含附加电缆长度）",
+   en:"Field name revised (additional cable length)", oldZh:"Length (OM3)：仅 OM3 长度", oldEn:"Length (OM3): OM3 length only"},
+  {rev:"12.4", a:"5-6 / 13", kind:"add", zh:"速率标识符新增取值 20h（基于 PMD 的速率选择）",
+   en:"Rate identifier adds value 20h (PMD-based rate select)"},
+  {rev:"11.4", a:"A2h 110+", kind:"add", zh:"新增 Retimer/CDR、可变接收判决阈值、A2h 上半区表寻址",
+   en:"Adds retimer/CDR, variable RX decision threshold, upper-page addressing"},
+  {rev:"11.4", a:"A2h 40-55", kind:"add", zh:"新增激光器温度与 TEC 电流的告警/警告阈值",
+   en:"Adds laser temperature / TEC current alarm and warning thresholds"}
+];
+
+var PREV = { "12.4":"11.4", "11.4":"11.0" };
+var BYTE_FIELDS = {
+  96:"温度 Temperature", 97:"温度 Temperature", 98:"供电电压 Vcc", 99:"供电电压 Vcc",
+  100:"偏置电流 TX Bias", 101:"偏置电流 TX Bias", 102:"发射光功率 TX Power", 103:"发射光功率 TX Power",
+  104:"接收光功率 RX Power", 105:"接收光功率 RX Power", 112:"告警标志位 [7:0]", 113:"告警标志位 [15:8]",
+  114:"Tx 输入 EQ 控制", 115:"Rx 输出预加重控制", 116:"警告标志位 [7:0]", 117:"警告标志位 [15:8]",
+  118:"扩展状态", 119:"CDR 失锁标志"
+};
+
+var NAMES = { B:"B · 软糖卡片", E:"E · 极简萌", J:"J · 水彩静蓝", M:"M · 初音未来" };
+var SKINS = [["B","软糖"],["J","水彩"],["E","极简"],["M","初音"]];
+var state = { v:"B", lang:"both", rev:"12.4", sel:96, tab:"guide", table:null };
+var TABLES = {
+  "5-1": { t:"物理器件标识符取值", e:"PHYSICAL DEVICE IDENTIFIER", cols:["A0h 取值","说明"], rows:[
+    ["00h","未知或未指定"],["01h","GBIC"],["02h","焊接在主板上的模块（如 SFF）"],
+    ["03h","SFP 或 SFP+"],["04h-7Fh","本规范未使用，取值维护在 SFF-8024"],["80h-FFh","厂商特定"]
+  ]},
+  "5-2": { t:"物理器件扩展标识符取值", e:"EXTENDED IDENTIFIER", cols:["A0h 取值","说明"], rows:[
+    ["00h","未规定 GBIC 定义，或不符合任何已定义的 MOD_DEF"],["01h-03h","GBIC 符合 MOD_DEF 1 / 2 / 3"],
+    ["04h","GBIC/SFP 功能仅由双线接口 ID 定义"],["05h-07h","GBIC 符合 MOD_DEF 5 / 6 / 7"],["08h-FFh","保留"]
+  ]},
+  "5-3": { t:"连接器取值", e:"CONNECTOR VALUES", moved:true,
+    note:"12.1 版起，连接器取值已移至 SFF-8024 的「收发器或电缆管理」章节；本文档只保留引用，不再重复表格。", rows:[] },
+  "5-6": { t:"速率标识符", e:"RATE IDENTIFIER", cols:["A0h 取值","说明"], rows:[
+    ["00h","未规定"],["01h","SFF-8079（4/2/1G Rate_Select 与 AS0/AS1）"],
+    ["02h","SFF-8431 8/4/2G 仅接收 Rate_Select"],["04h","SFF-8431 8/4/2G 仅发送 Rate_Select"],
+    ["06h","SFF-8431 8/4/2G 收/发独立 Rate_Select"],["08h","FC-PI-5 16/8/4G 仅接收"],
+    ["0Ch","FC-PI-6 32/16/8G 收/发独立"],["0Eh","10/8G 收/发，按表 10-2 控制 retimer / CDR"],
+    ["10h","FC-PI-7 64/32/16G 收/发独立"],["20h","基于 PMD 的速率选择（12.4 新增）"]
+  ]},
+  "8-3": { t:"选项值", e:"OPTIONS", cols:["A0h 字节","比特","说明"], rows:[
+    ["64","4","分页实现指示：1 = 已实现分页，用 A2h 字节 127 作页选择"],
+    ["64","3","Retimer 或 CDR 指示"],["64","1","功率等级声明（等级 1 / 等级 2）"],
+    ["65","7","已实现接收机判决阈值 RDT"],["65","5","实现了 RATE_SELECT 功能"],
+    ["65","4","实现了 TX_DISABLE"],["65","3","实现了 TX_FAULT 信号"],["65","1","实现了 Rx_LOS"]
+  ]},
+  "8-5": { t:"诊断监测类型", e:"DIAGNOSTIC MONITORING TYPE", cols:["A0h 字节","比特","说明"], rows:[
+    ["92","7","保留，须为 0"],["92","6","已实现数字诊断监测"],["92","5","内部校准"],["92","4","外部校准"],
+    ["92","3","接收光功率类型：0 = OMA，1 = 平均功率"],["92","2","需要地址切换"],["92","1-0","保留"]
+  ]},
+  "8-8": { t:"SFF-8472 合规性", e:"COMPLIANCE", cols:["A0h 取值","解释"], rows:[
+    ["01h","9.3 版所述功能"],["02h","9.5 版"],["03h","10.2 版"],["04h","10.4 版"],["05h","11.0 版"],
+    ["06h","11.3 版"],["07h","11.4 版"],["08h","12.3 版"],["09h","12.4 版"],["0Ah-FFh","保留"]
+  ]},
+  "9-17": { t:"告警与警告标志位", e:"ALARM / WARNING FLAGS", cols:["A2h 字节","比特","名称","说明"], rows:[
+    ["112","7","温度高告警","内部温度超过高告警电平"],["112","6","温度低告警","低于低告警电平"],
+    ["112","5","Vcc 高告警","电源电压超过高告警电平"],["112","4","Vcc 低告警","低于低告警电平"],
+    ["112","3","TX 偏置高告警","偏置电流超过高告警电平"],["112","2","TX 偏置低告警","低于低告警电平"],
+    ["112","1","TX 功率高告警","输出功率超过高告警电平"],["112","0","TX 功率低告警","低于低告警电平"],
+    ["113","7","RX 功率高告警","接收功率超过高告警电平"],["113","6","RX 功率低告警","低于低告警电平"],
+    ["116","7-0","警告标志 [7:0]","温度 / Vcc / 偏置 / TX 功率的低警告位"],
+    ["117","7-0","警告标志 [15:8]","RX 功率与可选项的警告位"]
+  ]},
+  "10-1": { t:"扩展模块控制 / 状态字节", e:"EXTENDED STATUS / CONTROL", cols:["A2h 字节","比特","名称","说明"], rows:[
+    ["118","7-5","保留",""],["118","4","自适应输入 EQ 失败","1b = Tx 自适应输入 EQ 失败"],
+    ["118","3","Soft RS(1) Select","软件发送速率控制，与硬引脚相或"],
+    ["118","2","Power Level 4 Enable","置 1 即使能功率等级 4"],
+    ["118","1","Power Level 工作状态","可选，0 = 等级 1，1 = 等级 2/3"],
+    ["118","0","Power Level 选择","0 仅使能等级 1（1.0 W），1 使能等级 2/3"],
+    ["119","4","PAM4 模式发送已配置",""],["119","3","PAM4 模式接收已配置",""]
+  ]}
+};
+var MISSING_TABLES = "4-1 / 4-2 / 5-4 / 8-4 / 8-6 / 8-7 / 9-5 / 9-6 / 9-11 / 9-16 / 9-18 / 9-19 / 10-2 / 10-3";
+
+function zoneOf(i) { for (var k=0;k<ZONES.length;k++) { if (i>=ZONES[k].from && i<=ZONES[k].to) return ZONES[k]; } return ZONES[ZONES.length-1]; }
+function hex(i) { var s = i.toString(16).toUpperCase(); return s.length < 2 ? "0"+s : s; }
+function esc(s) { return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+function L(zh, en) {
+  if (state.lang === "en") return esc(en);
+  if (state.lang === "zh") return esc(zh);
+  return esc(zh) + '<i class="en">' + esc(en) + '</i>';
+}
+function Lm(zhHtml, enHtml) {
+  if (state.lang === "en") return enHtml;
+  if (state.lang === "zh") return zhHtml;
+  return zhHtml + '<i class="en">' + enHtml + '</i>';
+}
+function Lin(zh, en) { return esc(zh) + '<em class="enin">' + esc(en) + '</em>'; }
+function changedInByte(i, rev) {
+  var r = CHANGED[rev] || [];
+  for (var k=0;k<r.length;k++) { if (i >= r[k][0] && i <= r[k][1]) return true; }
+  return false;
+}
+function diffsOf(rev) { return DIFFS.filter(function(d){ return d.rev === rev; }); }
+function linkTables(h) {
+  return h.replace(/(表|Table)\s+(\d+)-(\d+)/g, function(m, k, a, b) {
+    return '<button class="tref" data-act="table" data-val="' + a + '-' + b + '">' + m + '</button>';
+  });
+}
+function LT(zh, en) { return linkTables(L(zh, en)); }
+function tableCard(id) {
+  var t = TABLES[id];
+  var close = '<button class="sheetClose" data-act="closeTable" aria-label="close">&times;</button>';
+  if (!t) {
+    return '<div class="sheetCard"><div class="sheetHead"><h3>表 ' + id + '</h3><span>NOT IN PROTOTYPE</span>' + close + '</div>' +
+      '<p class="sheetNote">' + L("这张表不在原型里。真实站点应从 PDF 抽取该表并渲染；原型只收录了 9 张高频表，其余在表索引里标了「暂未收录」。","This table is not in the prototype. A real site would extract it from the PDF; the prototype includes nine high-traffic tables and lists the rest as missing.") + '</p></div>';
+  }
+  var head = '<tr>' + t.cols.map(function(c) { return '<th>' + esc(c) + '</th>'; }).join('') + '</tr>';
+  var body = t.rows.map(function(r) {
+    return '<tr>' + r.map(function(c, i) { return '<td' + (i === 0 ? ' class="k"' : '') + '>' + esc(c) + '</td>'; }).join('') + '</tr>';
+  }).join('');
+  var inner = t.moved
+    ? '<p class="sheetNote">' + esc(t.note) + '</p>'
+    : '<table class="tbl"><thead>' + head + '</thead><tbody>' + body + '</tbody></table>';
+  return '<div class="sheetCard"><div class="sheetHead"><h3>表 ' + id + '　' + esc(t.t) + '</h3><span>' + esc(t.e) + '</span>' + close + '</div>' +
+    inner + '<p class="sheetNote">' + (state.lang === "en" ? "Source: SFF-8472 Rev 12.4 · Table " : "源：SFF-8472 Rev 12.4 · 表 ") + id + '</p></div>';
+}
+function renderSheet() {
+  var sh = document.getElementById("sheet");
+  if (!state.table) { sh.className = "sheetWrap"; sh.innerHTML = ""; return; }
+  sh.className = "sheetWrap open";
+  sh.innerHTML = tableCard(state.table);
+}
+function tableIndex(skin) {
+  var keys = Object.keys(TABLES), chips = "";
+  for (var i = 0; i < keys.length; i++) {
+    chips += '<button data-act="table" data-val="' + keys[i] + '">表 ' + keys[i] + '</button>';
+  }
+  var miss = '<span class="miss">' + L("原型暂未收录：", "not in prototype: ") + MISSING_TABLES + '</span>';
+  if (skin === "a") {
+    return '<div class="aSec" id="at"><div class="aCap">表索引 · 已收录 ' + keys.length + ' 张</div>' +
+      '<div class="tblIdx">' + chips + '</div>' +
+      '<p class="ds" style="margin:10px 0 0;font-size:11.5px;line-height:1.7;color:#A79E8C">' +
+      L("正文里的「见表 X-Y」都是可点的，点开即在本页浮层查看；未收录的表会明确说明，不留死链。", "Every “see Table X-Y” in the body opens in place; missing tables say so instead of dead-ending.") + '</p>' +
+      '<div class="tblIdx" style="margin-top:8px">' + miss + '</div></div>';
+  }
+  if (skin === "b") {
+    return '<div class="bSec" id="bt"><h2>' + L("表索引", "Table index") + '<span>' + keys.length + ' TABLES</span></h2>' +
+      '<div class="bCard"><div class="tblIdx">' + chips + '</div>' +
+      '<p class="ds" style="margin:12px 0 0;font-size:11.5px;color:#B6A9BE">' +
+      L("正文里的「见表 X-Y」可点开，弹层里就是原表。", "Every “see Table X-Y” opens the table in a sheet.") + '</p>' +
+      '<div class="tblIdx" style="margin-top:10px">' + miss + '</div></div></div>';
+  }
+  return '<div class="cPanel"><h2>TABLE INDEX <em>' + keys.length + ' INCLUDED</em></h2>' +
+    '<div class="tblIdx">' + chips + '</div>' +
+    '<div class="tblIdx" style="margin-top:10px">' + miss + '</div></div>';
+}
+
+function langChips(cls) {
+  var out = "", opts = [["zh","中文"],["en","EN"],["both","对照"]];
+  for (var i=0;i<opts.length;i++) {
+    out += '<button class="'+cls+(state.lang===opts[i][0]?' on':'')+'" data-act="lang" data-val="'+opts[i][0]+'">'+opts[i][1]+'</button>';
+  }
+  return out;
+}
+function revChips(cls) {
+  var out = "", opts = ["11.4","12.4"];
+  for (var i=0;i<opts.length;i++) {
+    out += '<button class="'+cls+(state.rev===opts[i]?' on':'')+'" data-act="rev" data-val="'+opts[i]+'">Rev '+opts[i]+'</button>';
+  }
+  return out;
+}
+
+/* ================= A ================= */
+function introB() {
+  var units = "";
+  for (var i=0;i<UNITS.length;i++) { units += '<span class="bUnit">'+L(UNITS[i].zh, UNITS[i].en)+'<b>'+UNITS[i].lsb+'</b></span>'; }
+  return '<div class="bSec" id="ov">' +
+    '<h2>'+L("一分钟看懂","In one minute")+'<span>WHAT / HOW / WHY</span></h2>' +
+    '<div class="bWhy">' +
+      '<div class="bCard"><h3><span class="bNum">1</span>'+L("它是什么","What it is")+'</h3><p>'+L("SFF-8472 在 SFP MSA 的 EEPROM 映射上加了一层「增强型数字诊断」：一条两线总线，读出 5 个模拟量，外加 2 个 DWDM 可选量。","SFF-8472 adds an enhanced diagnostic layer on top of the SFP MSA EEPROM map: one 2-wire bus, five analog values plus two optional DWDM values.")+'</p></div>' +
+      '<div class="bCard"><h3><span class="bNum">2</span>'+L("怎么读","How to read")+'</h3><p>'+L("A0h 读身份，A2h 读诊断；每个量 2 字节、MSB 在前；若 A0h 92h 比特 2 置位，访问 A2h 前要先做地址切换。","Read identity at A0h, diagnostics at A2h; two bytes per value, MSB first. If bit 2 of A0h 92h is set, run the address-change sequence before touching A2h.")+'</p></div>' +
+      '<div class="bCard"><h3><span class="bNum">3</span>'+L("为什么要有","Why it exists")+'</h3><p>'+L("让主机判断链路是否健康、定位是模块过热还是收光不足，并在越界时点亮告警标志，而不是等链路断了才报错。","So the host can judge link health, tell overheating from low received power, and raise flags on threshold violations instead of waiting for the link to drop.")+'</p></div>' +
+    '</div>' +
+    '<div class="bBusRow">' +
+      '<div class="bChipBox">'+L("主机","HOST")+'</div><div class="bWire"></div>' +
+      '<div class="bChipBox"><b>A0h</b>'+L("身份 256 B","identity 256 B")+'</div>' +
+      '<div class="bChipBox"><b>A2h</b>'+L("诊断 256 B","diagnostics 256 B")+'</div>' +
+    '</div>' +
+    '<div class="bUnits">'+units+'</div>' +
+    tableIndex("b") +
+  '</div>';
+}
+function renderB() {
+  var cells = "";
+  for (var i=0;i<256;i++) {
+    var z = zoneOf(i);
+    cells += '<div class="bCell ' + z.z + (changedInByte(i, state.rev) ? " chg" : "") + '" title="A2h '+hex(i)+' · '+esc(z.zh)+'">'+hex(i)+'</div>';
+  }
+  var cards = "";
+  for (var k=0;k<A0.length;k++) {
+    var r = A0[k];
+    var chg = (state.rev === "12.4" && r.ch12) || (state.rev === "11.4" && r.ch11);
+    cards += '<div class="bCard bReg"><h3><span class="byte">'+r.a+'</span>'+esc(r.en)+'</h3><p class="ds">'+LT(r.dZh, r.dEn)+'</p>' + (chg ? '<span class="chg">Rev '+state.rev+' 变更</span>' : '') + '</div>';
+  }
+  var stats = "";
+  for (var s=0;s<DIAG.length;s++) {
+    var g = DIAG[s];
+    stats += '<div class="bCard bStatCard"><div class="bRing" style="--p:'+g.pct+'%"><i>'+g.pct+'%</i></div>' +
+      '<div><div class="k">'+L(g.zh, g.en)+'</div><div class="v">'+g.v+'</div><div class="th">'+g.th+'</div></div></div>';
+  }
+  var left = "", right = "", list = diffsOf(state.rev);
+  for (var m=0;m<list.length;m++) {
+    var d = list[m];
+    left += '<li><span class="tag">'+d.a+'</span>'+L(d.oldZh || "（此前无此定义）", d.oldEn || "(not defined before)")+'</li>';
+    right += '<li class="'+(d.kind==="add"?"hot":"")+'"><span class="tag">'+d.a+'</span>'+L(d.zh, d.en)+'</li>';
+  }
+  var nav = [["概览","ov"],["字段","bf"],["地图","bm"],["诊断","bd"],["版本","bv"]], navHtml = "";
+  for (var n=0;n<nav.length;n++) { navHtml += '<button data-act="jump" data-val="'+nav[n][1]+'">'+nav[n][0]+'</button>'; }
+  return '<div class="bWrap">' +
+    '<div class="bTop">' +
+      '<div class="bBrand">SFP<i>+</i> 管理接口</div>' +
+      '<div class="bNav">'+navHtml+'</div>' +
+      '<div class="bSeg">'+langChips("")+'</div>' +
+      '<div class="bSeg">'+revChips("")+'</div>' +
+    '</div>' +
+    '<div class="bHero">' +
+      '<div class="bBlob b1"></div><div class="bBlob b2"></div>' +
+      '<h1>SFF-8472 <span style="color:#FF7EB0">Rev '+state.rev+'</span></h1>' +
+      '<p>'+L("一个 256 字节的 EEPROM，装下了整只光模块的身份、诊断与告警。先看它是什么，再按「地图 → 字段 → 阈值」三张卡片读完。","A 256-byte EEPROM holds the whole module: identity, diagnostics, alarms. Learn what it is, then read it as three decks: map, fields, thresholds.")+'</p>' +
+      '<div class="bStats">' +
+        '<span class="bPill"><b>256</b>'+L("字节 / A2h","bytes / A2h")+'</span>' +
+        '<span class="bPill"><b>2</b>'+L("条总线地址","bus addresses")+'</span>' +
+        '<span class="bPill"><b>5</b>'+L("实时量","real-time values")+'</span>' +
+        '<span class="bPill"><b>'+diffsOf(state.rev).length+'</b>'+L("处版本差异","revision deltas")+'</span>' +
+      '</div>' +
+    '</div>' +
+    introB() +
+    '<div class="bSec" id="bf">' +
+      '<h2>'+L("字段卡片","Field cards")+'<span>A0h</span></h2>' +
+      '<div class="bGrid">'+cards+'</div>' +
+    '</div>' +
+    '<div class="bSec" id="bm">' +
+      '<h2>'+L("内存地图","Memory map")+'<span>A2h 00-FF</span></h2>' +
+      '<div class="bCard"><div class="bMap">'+cells+'</div>' +
+        '<div class="bLegend">' +
+          '<span><i style="background:#FFD9E7"></i>'+Lin("阈值","thresholds")+'</span>' +
+          '<span><i style="background:#E3DAFB"></i>'+Lin("校准/增强","cal / enhanced")+'</span>' +
+          '<span><i style="background:#D8F3E4"></i>'+Lin("实时量","real-time")+'</span>' +
+          '<span><i style="background:#D9EDFB"></i>'+Lin("状态/控制","status")+'</span>' +
+          '<span><i style="background:#FFF1C9"></i>'+Lin("厂商","vendor")+'</span>' +
+          '<span>'+Lin("粉色描边 = 本版语义变更","pink ring = changed in this revision")+'</span>' +
+        '</div>' +
+      '</div>' +
+    '</div>' +
+    '<div class="bSec" id="bd">' +
+      '<h2>'+L("实时诊断","Live diagnostics")+'<span>A2h 96-105</span></h2>' +
+      '<div class="bStat">'+stats+'</div>' +
+    '</div>' +
+    '<div class="bSec" id="bv">' +
+      '<h2>'+L("版本对比","Revision compare")+'<span>'+PREV[state.rev]+' &rarr; '+state.rev+'</span></h2>' +
+      '<div class="bDelta"><b>'+diffsOf(state.rev).length+'</b> '+L("处差异在本版生效","deltas active in this revision")+'</div>' +
+      '<div class="bDiff">' +
+        '<div class="bCard old"><h3>REV '+PREV[state.rev]+'</h3><ul>'+left+'</ul></div>' +
+        '<div class="bCard new"><h3>REV '+state.rev+' · 当前</h3><ul class="new">'+right+'</ul></div>' +
+      '</div>' +
+    '</div>' +
+  '</div>';
+}
+
+/* ================= C ================= */
+function gridC(rev, small) {
+  var cells = "";
+  for (var i=0;i<256;i++) {
+    var z = zoneOf(i), cls = "cCell";
+    if (z.key === "th") cls += " z5";
+    else if (z.key === "cal" || z.key === "cc") cls += " z1";
+    else if (z.key === "rt") cls += " z2";
+    else if (z.key === "opt" || z.key === "sc") cls += " z3";
+    if (changedInByte(i, rev)) cls += " chg";
+    if (!small && i === state.sel) cls += " sel";
+    cells += '<div class="'+cls+'"'+(small?'':' data-act="sel" data-val="'+i+'"')+'>'+hex(i)+'</div>';
+  }
+  return '<div class="cMap">'+cells+'</div>';
+}
+function tableChips() {
+  var keys = Object.keys(TABLES), out = "";
+  for (var i = 0; i < keys.length; i++) out += '<button data-act="table" data-val="' + keys[i] + '">表 ' + keys[i] + '</button>';
+  return '<div class="tblIdx">' + out + '</div>';
+}
+function renderE() {
+  var rows = "";
+  for (var i = 0; i < A0.length; i++) {
+    var r = A0[i];
+    rows += '<div class="eRow"><span class="eAddr">' + r.a + '</span><div><h3>' + esc(r.en) + '<span>' + esc(r.zh) + '</span></h3><p>' + LT(r.dZh, r.dEn) + '</p></div></div>';
+  }
+  var dots = "";
+  for (var b = 0; b < 256; b++) {
+    var z = zoneOf(b), cls = "eDot";
+    if (changedInByte(b, state.rev)) cls += " chg";
+    else if (z.key === "th") cls += " z3";
+    else if (z.key === "cal" || z.key === "cc") cls += " z1";
+    else if (z.key === "rt") cls += " z2";
+    dots += '<div class="' + cls + '" title="A2h ' + hex(b) + ' · ' + esc(z.zh) + '"></div>';
+  }
+  var stats = "";
+  for (var s = 0; s < DIAG.length; s++) {
+    stats += '<div class="eStat"><div class="k">' + L(DIAG[s].zh, DIAG[s].en) + '</div><div class="v">' + DIAG[s].v + '</div></div>';
+  }
+  var ld = "", rd = "", list = diffsOf(state.rev);
+  for (var m = 0; m < list.length; m++) {
+    var d = list[m];
+    ld += '<div class="eItem"><s>' + esc(d.oldZh || "（无此定义）") + '</s></div>';
+    rd += '<div class="eItem ' + (d.kind === "add" ? "add" : "chg") + '">' + esc(d.a) + ' · ' + esc(d.zh) + '</div>';
+  }
+  var nav = [["e-ov","概览"],["e-reg","字段"],["e-map","地图"],["e-dia","诊断"],["e-diff","版本"]], navHtml = "";
+  for (var n = 0; n < nav.length; n++) navHtml += '<button data-act="jump" data-val="' + nav[n][0] + '">' + nav[n][1] + '</button>';
+  return '<div class="eTop">' +
+      '<div class="eBrand">SFF<i>·</i>8472</div>' +
+      '<div class="eNav">' + navHtml + '</div>' +
+      '<div class="eCtl">' + langChips("eT") + revChips("eT") + '</div>' +
+    '</div>' +
+    '<div class="eW">' +
+      '<div class="eHero"><h1>' + (state.lang === "en" ? "SFP+ management<br>interface" : "SFP+ 管理<br>接口规范") + ' <em>Rev ' + state.rev + '</em></h1>' +
+        (state.lang === "both" ? '<p class="eSubEn">SFP+ management interface</p>' : '') +
+        '<p>' + L("一种跑在两线总线上的增强型数字诊断接口。它不改变链路，只回答一个问题：这只模块现在怎么样。","An enhanced diagnostic interface over a 2-wire bus. It does not change the link; it answers one question: how is this module doing.") + '</p></div>' +
+      '<div class="eSec" id="e-ov"><div class="eLabel"><span>01 / OVERVIEW</span><b>' + L("概览","Overview") + '</b></div>' +
+        '<p class="eLead">' + L("SFF-8472 是 SFP MSA 中 MOD_DEF（INF-8074）的超集。主机通过 A0h 读身份、A2h 读诊断，每个诊断量 2 字节、MSB 在前；若 A0h 字节 92 比特 2 置位，访问 A2h 前要先执行地址切换序列。", "SFF-8472 is a superset of MOD_DEF (INF-8074). The host reads identity at A0h and diagnostics at A2h, two bytes per value, MSB first. If bit 2 of A0h byte 92 is set, run the address-change sequence before touching A2h.") + '</p>' +
+        '<div class="eGrid3">' +
+          '<div><h4>' + L("身份在 A0h","Identity at A0h") + '</h4><p>' + L("标识符、连接器、速率、厂商名 / PN / SN、合规版本，以及两个校验码 CC_BASE / CC_EXT。", "Identifier, connector, rate, vendor name/PN/SN, compliance revision, and two checksums.") + '</p></div>' +
+          '<div><h4>' + L("诊断在 A2h","Diagnostics at A2h") + '</h4><p>' + L("40 字节阈值、36 字节校准或增强特性、10 字节实时量、状态与告警标志。", "40 threshold bytes, 36 calibration/enhanced bytes, 10 real-time bytes, status and flags.") + '</p></div>' +
+          '<div><h4>' + L("两种校准","Two calibrations") + '</h4><p>' + L("内部校准读到绝对值；外部校准读到 A/D 计数，须用常数换算。", "Internal calibration yields absolute values; external yields A/D counts needing conversion.") + '</p></div>' +
+        '</div>' +
+        '<div class="eLabel" style="margin-top:24px"><span>TABLES</span><b>' + L("表索引","Table index") + '</b></div>' +
+        tableChips() +
+        '</div>' +
+      '<div class="eSec" id="e-reg"><div class="eLabel"><span>02 / REGISTERS</span><b>' + L("A0h 字段","A0h fields") + '</b></div>' + rows + '</div>' +
+      '<div class="eSec" id="e-map"><div class="eLabel"><span>03 / MEMORY MAP</span><b>' + L("A2h 内存","A2h memory") + '</b></div>' +
+        '<div class="eDots">' + dots + '</div>' +
+        '<div class="eLegend">' +
+          '<span><i style="background:#FFE6EF"></i>' + Lin("阈值 0-55","thresholds") + '</span>' +
+          '<span><i style="background:#DCE4FF"></i>' + Lin("校准/增强 56-94","cal") + '</span>' +
+          '<span><i style="background:#DFF3E8"></i>' + Lin("实时量 96-105","real-time") + '</span>' +
+          '<span><i style="background:#7C9CFF"></i>' + Lin("本版变更","changed") + '</span>' +
+        '</div></div>' +
+      '<div class="eSec" id="e-dia"><div class="eLabel"><span>04 / DIAGNOSTICS</span><b>' + L("实时量","Real-time") + '</b></div><div class="eStats">' + stats + '</div></div>' +
+      '<div class="eSec" id="e-diff"><div class="eLabel"><span>05 / REVISION</span><b>' + L("版本对照", "Revision") + '</b></div>' +
+        '<div class="eDiff"><div><h3>REV ' + PREV[state.rev] + '</h3>' + ld + '</div><div><h3>REV ' + state.rev + '</h3>' + rd + '</div></div></div>' +
+    '</div>' +
+    '<div class="eMascot">SFP<br>娘</div>';
+}
+
+function mapCells(cls, rev) {
+  var cells = "";
+  for (var b = 0; b < 256; b++) {
+    var z = zoneOf(b), c = cls + " " + (z.z === "z1" || z.z === "z2" || z.z === "z3" || z.z === "z5" ? z.z : "");
+    if (z.key === "th") c += " z5";
+    if (changedInByte(b, rev)) c += " chg";
+    cells += '<div class="' + c + '">' + hex(b) + '</div>';
+  }
+  return cells;
+}
+
+function renderJ() {
+  var rows = "";
+  for (var i = 0; i < A0.length; i++) {
+    var r = A0[i];
+    rows += '<div class="jRow"><span class="jAddr">' + r.a + '</span><div><h3>' + esc(r.en) + '<span>' + esc(r.zh) + '</span></h3><p>' + LT(r.dZh, r.dEn) + '</p></div></div>';
+  }
+  var dots = "";
+  for (var b = 0; b < 256; b++) {
+    var z = zoneOf(b), c = "jDot";
+    if (z.z === "z1") c += " z1"; else if (z.z === "z2") c += " z2"; else if (z.z === "z3") c += " z3";
+    if (z.key === "th" || z.key === "fl") c += " z5";
+    if (changedInByte(b, state.rev)) c += " chg";
+    dots += '<div class="' + c + '"></div>';
+  }
+  var stats = "";
+  for (var s = 0; s < DIAG.length; s++) stats += '<div class="jStat"><b>' + DIAG[s].v + '</b><span>' + esc(DIAG[s].zh) + '</span></div>';
+  var ld = "", rd = "", list = diffsOf(state.rev);
+  for (var m = 0; m < list.length; m++) {
+    ld += '<p>' + esc(list[m].a) + ' · ' + esc(list[m].oldZh || "（此前无此定义）") + '</p>';
+    rd += '<p class="' + (list[m].kind === "chg" ? "hot" : "") + '">' + esc(list[m].a) + ' · ' + esc(list[m].zh) + '</p>';
+  }
+  return '<div class="jWrap">' +
+    '<div class="jHead"><div class="jKick">SFF-8472 · SFP+ MANAGEMENT INTERFACE</div>' +
+      '<h1>管理接口规范</h1><p>REV ' + state.rev + ' ／ 2021.03.31</p>' +
+      '<div class="jCtl">' + langChips("jChip") + revChips("jChip") + '</div></div>' +
+    '<section class="jSec"><div class="jLabel"><span>01</span><b>概览</b></div>' +
+      '<p class="jLead">' + L("增强型数字诊断接口是 SFP MSA 中 MOD_DEF 的超集。它不改变光链路，只把模块内部的温度、电压、偏置与收发光功率数字化，交给主机读取；越界时点亮告警标志。", "A superset of MOD_DEF. It does not touch the link; it digitizes temperature, voltage, bias and optical power for the host, and lights alarm flags on threshold violations.") + '</p>' +
+      '<div class="jCols3">' +
+        '<div><h4>两处藏身</h4><p>' + L("A0h 存身份，A2h 存诊断，各 256 字节。", "A0h identity, A2h diagnostics, 256 bytes each.") + '</p></div>' +
+        '<div><h4>两种校准</h4><p>' + L("92h 比特 5 内部（绝对值），比特 4 外部（计数换算）。", "92h bit 5 internal, bit 4 external counts.") + '</p></div>' +
+        '<div><h4>一处留心</h4><p>' + L("多字节字段必须单次两字节读。", "Multi-byte fields need one two-byte read.") + '</p></div>' +
+      '</div>' +
+      '<div style="margin-top:18px">' + tableChips() + '</div></section>' +
+    '<section class="jSec"><div class="jLabel"><span>02</span><b>A0h 字段</b></div>' + rows + '</section>' +
+    '<section class="jSec"><div class="jLabel"><span>03</span><b>A2h 内存</b></div>' +
+      '<div class="jMap">' + dots + '</div><div class="jNote">' + L("描边 = 本版语义变更", "outline = changed in this revision") + '</div></section>' +
+    '<section class="jSec"><div class="jLabel"><span>04</span><b>实时量</b></div><div class="jStats">' + stats + '</div></section>' +
+    '<section class="jSec"><div class="jLabel"><span>05</span><b>版本对照</b></div>' +
+      '<div class="jDiff"><div><h3>REV ' + PREV[state.rev] + '</h3>' + ld + '</div><div><h3>REV ' + state.rev + '</h3>' + rd + '</div></div></section>' +
+  '</div>';
+}
+
+function renderM() {
+  var rows = "";
+  for (var i = 0; i < A0.length; i++) {
+    var r = A0[i];
+    rows += '<div class="mRow"><b>' + r.a + '</b><div><h3>' + esc(r.en) + '<span>' + esc(r.zh) + '</span></h3><p>' + LT(r.dZh, r.dEn) + '</p></div></div>';
+  }
+  var cells = "";
+  for (var b = 0; b < 256; b++) {
+    var z = zoneOf(b), c = "mCell";
+    if (z.z === "z1") c += " z1"; else if (z.z === "z2") c += " z2"; else if (z.z === "z3") c += " z3";
+    if (z.key === "th" || z.key === "fl") c += " z5";
+    if (changedInByte(b, state.rev)) c += " chg";
+    cells += '<div class="' + c + '">' + hex(b) + '</div>';
+  }
+  var meters = "";
+  for (var s = 0; s < 5; s++) meters += '<div class="mMeter"><b>' + DIAG[s].v + '</b><span>' + esc(DIAG[s].zh) + '</span><i style="width:' + DIAG[s].pct + '%"></i></div>';
+  var ld = "", rd = "", list = diffsOf(state.rev);
+  for (var m = 0; m < list.length; m++) {
+    ld += '<p>' + esc(list[m].a) + ' · ' + esc(list[m].oldZh || "（此前无此定义）") + '</p>';
+    rd += '<p>' + esc(list[m].a) + ' · ' + esc(list[m].zh) + '</p>';
+  }
+  return '<div class="mHead"><div class="m39">39</div>' +
+      '<div class="mKick">SFF-8472 · SFP+ MANAGEMENT INTERFACE</div>' +
+      '<h1>管理接口规范</h1><p>REV ' + state.rev + ' ／ 2021.03.31 ／ TRACK 01</p>' +
+      '<div class="mBand"></div>' +
+      '<div class="mCtl">' + langChips("mChip") + revChips("mChip") + '</div></div>' +
+    '<div class="mWrapIn">' +
+      '<section class="mSec"><h2>' + L("概览", "Overview") + '<em>01 / INTRO</em></h2>' +
+        '<p class="mLead">' + L("增强型数字诊断接口是 SFP MSA 中 MOD_DEF 的超集。一条两线总线，把模块内部的温度、电压、偏置与收发光功率数字化，交给主机读取；越界时点亮告警标志。", "A superset of MOD_DEF: one 2-wire bus digitizing temperature, voltage, bias and optical power for the host, with alarm flags on threshold violations.") + '</p>' +
+        '<div class="mCols3">' +
+          '<div><h4>' + L("两个地址", "Two addresses") + '</h4><p>' + L("A0h 身份，A2h 诊断，各 256 字节。", "A0h identity, A2h diagnostics, 256 bytes each.") + '</p></div>' +
+          '<div><h4>' + L("两种校准", "Two calibrations") + '</h4><p>' + L("92h 比特 5 内部，比特 4 外部。", "92h bit 5 internal, bit 4 external.") + '</p></div>' +
+          '<div><h4>' + L("一处留心", "One caveat") + '</h4><p>' + L("多字节字段必须单次两字节读。", "Multi-byte fields need one two-byte read.") + '</p></div>' +
+        '</div>' +
+        '<div style="margin-top:16px">' + tableChips() + '</div></section>' +
+      '<section class="mSec"><h2>' + L("字段", "Fields") + '<em>02 / A0H</em></h2>' + rows + '</section>' +
+      '<section class="mSec"><h2>' + L("内存地图", "Memory map") + '<em>03 / A2H</em></h2><div class="mMap">' + cells + '</div></section>' +
+      '<section class="mSec"><h2>' + L("实时量", "Real-time") + '<em>04 / 96-105</em></h2><div class="mMeters">' + meters + '</div></section>' +
+      '<section class="mSec"><h2>' + L("版本对照", "Revision") + '<em>05 / ' + PREV[state.rev] + ' → ' + state.rev + '</em></h2>' +
+        '<div class="mDiff"><div><h3>REV ' + PREV[state.rev] + '</h3>' + ld + '</div><div><h3>REV ' + state.rev + '</h3>' + rd + '</div></div></section>' +
+    '</div>';
+}
+
+var ORDER2 = ["B","J","E","M"];
+var ORDER = ORDER2;
+function render() {
+  document.body.className = "v" + state.v;
+  var app = document.getElementById("app");
+  var fn = { B: renderB, E: renderE, J: renderJ, M: renderM }[state.v] || renderB;
+  app.innerHTML = fn();
+  syncSkin();
+  try {
+    if (location.protocol !== "file:") {
+      var u = new URL(location.href);
+      u.searchParams.set("variant", state.v);
+      history.replaceState(null, "", u);
+    }
+  } catch (err) {}
+  renderSheet();
+}
+function syncSkin() {
+  var p = document.getElementById("skinPanel");
+  if (!p) return;
+  var opts = p.querySelectorAll("[data-act='skin']");
+  for (var i = 0; i < opts.length; i++) {
+    if (opts[i].getAttribute("data-val") === state.v) opts[i].classList.add("on");
+    else opts[i].classList.remove("on");
+  }
+}
+function saveSkin() { try { localStorage.setItem("sff8472-skin", state.v); } catch (e) {} }
+function cycle(step) {
+  var i = ORDER.indexOf(state.v);
+  state.v = ORDER[(i + step + ORDER.length) % ORDER.length];
+  render();
+}
+document.addEventListener("click", function(e) {
+  if (!e.target.closest(".skin")) { var bp = document.getElementById("skinPanel"); if (bp) bp.classList.remove("open"); }
+  var el = e.target.closest("[data-act]");
+  if (!el) return;
+  var act = el.getAttribute("data-act"), val = el.getAttribute("data-val");
+  if (act === "lang") { state.lang = val; render(); }
+  else if (act === "rev") { state.rev = val; render(); }
+  else if (act === "sel") { state.sel = parseInt(val, 10); render(); }
+  else if (act === "tab") { state.tab = val; render(); }
+  else if (act === "jump") {
+    var t = document.getElementById(val);
+    if (t) t.scrollIntoView({ behavior:"smooth", block:"start" });
+  }
+  else if (act === "table") { state.table = val; renderSheet(); }
+  else if (act === "closeTable") { state.table = null; renderSheet(); }
+  else if (act === "skin") { state.v = val; saveSkin(); var pn = document.getElementById("skinPanel"); if (pn) pn.classList.remove("open"); render(); window.scrollTo({ top: 0, behavior: "instant" }); }
+  else if (act === "skinToggle") { var pn2 = document.getElementById("skinPanel"); if (pn2) pn2.classList.toggle("open"); }
+  else if (act === "prev") cycle(-1);
+  else if (act === "next") cycle(1);
+});
+document.addEventListener("keydown", function(e) {
+  var t = e.target;
+  if (t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.isContentEditable)) return;
+  if (e.key === "Escape" && state.table) { state.table = null; renderSheet(); }
+  if (e.key === "ArrowLeft") cycle(-1);
+  if (e.key === "ArrowRight") cycle(1);
+});
+(function boot() {
+  var p = new URLSearchParams(location.search).get("variant");
+  var saved = null;
+  try { saved = localStorage.getItem("sff8472-skin"); } catch (e) {}
+  if (p && NAMES[p]) state.v = p;
+  else if (saved && NAMES[saved]) state.v = saved;
+  render();
+  try {
+    if (!localStorage.getItem("sff8472-skin-tip")) {
+      var tip = document.getElementById("skinTip");
+      if (tip) {
+        tip.classList.add("show");
+        setTimeout(function () { tip.classList.remove("show"); }, 6500);
+      }
+      localStorage.setItem("sff8472-skin-tip", "1");
+    }
+  } catch (e) {}
+})();
+</script>
+</body>
+</html>

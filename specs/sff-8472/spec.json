@@ -1,0 +1,17 @@
+{
+  "id": "sff-8472",
+  "publisher": "SNIA / SFF TA TWG",
+  "title": {
+    "en": "Management Interface for SFP+",
+    "zh": "SFP+ 管理接口规范"
+  },
+  "homepage": "https://www.snia.org/technology-communities/sff/specifications",
+  "licenseNote": "原文版权归 SNIA；许可限个人/内部使用，禁止向第三方分发，衍生用途需向 copyright_request@snia.org 申请。",
+  "revisions": [
+    "12.4"
+  ],
+  "registers": [
+    "a0",
+    "a2"
+  ]
+}

@@ -1,0 +1,12 @@
+# generated / dependencies
+dist/
+node_modules/
+__pycache__/
+*.pyc
+.venv/
+.DS_Store
+
+# sources not committed (size + license)
+specs/**/source/*.pdf
+archive/legacy/*.pdf
+.spec-cache/

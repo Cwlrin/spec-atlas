@@ -1,0 +1,36 @@
+{
+  "spec": "sff-8472",
+  "revision": "12.4",
+  "retrieved": "2026-11-15",
+  "files": [
+    {
+      "path": "specs/sff-8472/rev-12.4/source/sff-8472-12.4.pdf",
+      "originalName": "SFF-8472-ver12.4.pdf",
+      "sha256": "88d7b0cb9c9ac16f47e0acc6cf569ffcf486809305b1560351adaea4fd88d127",
+      "bytes": 823843,
+      "tracked": false
+    },
+    {
+      "path": "specs/sff-8472/rev-12.4/source/sff-8472-12.4.zh.md",
+      "originalName": "SFF-8472-ver12.4-中文.md",
+      "sha256": "73cdaaf4ebcebbde706efa9451c06775f4e4e4d15751659476a2d9f9a4086be6",
+      "bytes": 102299,
+      "tracked": true
+    },
+    {
+      "path": "archive/legacy/sff-8472-12.4.zh.pdf",
+      "originalName": "SFF-8472-ver12.4-中文.pdf",
+      "sha256": "7c6f996d9bf0de2446cb8f314e0bf7157eec9df722fb88ad563b13f56cadb8f1",
+      "bytes": 616685,
+      "tracked": false
+    },
+    {
+      "path": "archive/legacy/sff-8472-bilingual-handbook.html",
+      "originalName": "SFF-8472-双语手册.html",
+      "sha256": "dc9878b961d808cb85a1ec8b8e7087b9ff58a41798fb6df7b8d20502d0d8103a",
+      "bytes": 302837,
+      "tracked": true
+    }
+  ],
+  "policy": "PDF 不入库（体积与版权），仅记录 sha256 以便重新获取时校验。"
+}
