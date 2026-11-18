@@ -3,6 +3,7 @@
   --muted: #5b6675;
   --line: #dfe4ea;
   --accent: #1f6feb;
+  --accent-soft: #eef4ff;
   --bg: #ffffff;
   --bg-muted: #f6f8fa;
   color-scheme: light;
@@ -150,3 +151,31 @@ code { font-family: ui-monospace, "SFMono-Regular", Consolas, monospace; }
 .block-list a:hover { text-decoration: underline; }
 .block-go { font-size: 0.85rem; }
 .block-meta { color: var(--muted); font-size: 0.9rem; }
+/* 图 4-1：双线地址与页选择。几何走 SVG，文字走 HTML，缩放时整体等比放大。 */
+.bus-map { margin: 1.75rem 0 0; }
+.bus-map-svg { display: block; width: 100%; height: auto; }
+.figure-group { fill: none; stroke: var(--line); stroke-width: 1; }
+.band-box { fill: var(--bg-muted); stroke: var(--line); stroke-width: 1; }
+.band-box.is-reserved { fill: var(--bg); stroke-dasharray: 5 4; }
+.band-box.is-select { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 1.5; }
+.band-rule { stroke: var(--line); stroke-width: 1; }
+.band-head { font-size: 0.8rem; line-height: 1.4; color: var(--muted); }
+.band-head p { margin: 0; }
+.band-body { padding: 0.2rem 0.5rem; font-size: 0.7rem; line-height: 1.3; overflow: hidden; }
+.band-body p { margin: 0; }
+.band-body .band-name { font-weight: 500; }
+.band-body .band-range {
+  font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+  font-size: 0.65rem;
+  color: var(--muted);
+}
+.band-body.is-compact { display: flex; gap: 0.4rem; align-items: baseline; padding: 0 0.5rem; }
+.band-body.is-compact .band-name { font-weight: 400; }
+.flow { fill: none; stroke: var(--accent); stroke-width: 1.5; }
+.flow-arrow { fill: var(--accent); }
+.figure-caption {
+  margin: 0.75rem 0 0;
+  font-size: 0.85rem;
+  line-height: 1.7;
+  color: var(--muted);
+}

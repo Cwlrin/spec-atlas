@@ -24,8 +24,8 @@
     "en": "{spec} Rev {revision} · {block}"
   },
   "home.addr.body": {
-    "zh": "总线上有两个地址，只差最低一位：A0h 是 1010000X，A2h 是 1010001X，其中 X 是读写位。A0h 放身份与静态参数，A2h 放诊断、阈值与校准常量；两块各 256 字节，互不覆盖。",
-    "en": "Two addresses sit one bit apart: A0h is 1010000X and A2h is 1010001X, where X is the read/write bit. A0h holds identity and static parameters; A2h holds diagnostics, thresholds and calibration constants. Each block is 256 bytes and neither overwrites the other."
+    "zh": "总线上有两个地址，只差最低一位：A0h 是 1010000X，A2h 是 1010001X，其中 X 是读写位。A0h 放身份与静态参数，A2h 放诊断、阈值与校准常量；两块各 256 字节，互不覆盖。A2h 的字节 127 是页选择，128-255 的内容随它换页。",
+    "en": "Two addresses sit one bit apart: A0h is 1010000X and A2h is 1010001X, where X is the read/write bit. A0h holds identity and static parameters; A2h holds diagnostics, thresholds and calibration constants. Each block is 256 bytes and neither overwrites the other. Byte 127 of A2h is the page select, and bytes 128-255 change with the page it names."
   },
   "home.addr.title": {
     "zh": "两个总线地址",
@@ -62,6 +62,94 @@
   "home.cal.title": {
     "zh": "两种校准",
     "en": "Two calibration modes"
+  },
+  "home.figure.a0": {
+    "zh": "两线地址 1010000X（A0h）",
+    "en": "2-wire address 1010000X (A0h)"
+  },
+  "home.figure.a0.id": {
+    "zh": "基本与扩展标识字段，{size} 字节",
+    "en": "Basic and extended ID fields, {size} bytes"
+  },
+  "home.figure.a0.reserved": {
+    "zh": "保留（SFF-8079），{size} 字节",
+    "en": "Reserved (SFF-8079), {size} bytes"
+  },
+  "home.figure.a0.vendor": {
+    "zh": "厂商特定，{size} 字节",
+    "en": "Vendor specific, {size} bytes"
+  },
+  "home.figure.a2": {
+    "zh": "两线地址 1010001X（A2h）",
+    "en": "2-wire address 1010001X (A2h)"
+  },
+  "home.figure.a2.cal": {
+    "zh": "校准常数或附加增强特性，{size} 字节",
+    "en": "Calibration constants or additional enhanced features, {size} bytes"
+  },
+  "home.figure.a2.diag": {
+    "zh": "诊断、控制与标志，{size} 字节",
+    "en": "Diagnostics, control and flags, {size} bytes"
+  },
+  "home.figure.a2.reserved": {
+    "zh": "保留与 CC_DMI",
+    "en": "Reserved and CC_DMI"
+  },
+  "home.figure.a2.select": {
+    "zh": "页选择",
+    "en": "Page select"
+  },
+  "home.figure.a2.threshold": {
+    "zh": "告警/警告阈值（含可选），{size} 字节",
+    "en": "Alarm/warning thresholds (incl. optional), {size} bytes"
+  },
+  "home.figure.a2.vendor": {
+    "zh": "厂商特定",
+    "en": "Vendor specific"
+  },
+  "home.figure.caption": {
+    "zh": "图 4-1 把两块地址空间按字节区间摊开：两个地址列共用一把尺子，框高与字节数成比例，太窄的分区抬到一行字的高度。A0h 从 0 一直铺到 255；A2h 的 0-127 是固定字段，127 处的页选择决定 128-255 落在下面四类页里的哪一类。页是互斥的备选，所以并排画，高度不与上面的字节比例对应。",
+    "en": "Figure 4-1 lays both address spaces out by byte range: the two address columns share one scale, so box height is proportional to byte count, and bands too thin for a label are raised to one line. A0h runs from 0 through 255; in A2h, 0-127 are fixed fields, and the page select at 127 decides which of the four pages below bytes 128-255 land in. Pages are alternatives, not stacked regions, so they sit side by side and their heights are not on that byte scale."
+  },
+  "home.figure.page.00": {
+    "zh": "页 00h/01h",
+    "en": "Pages 00h/01h"
+  },
+  "home.figure.page.00.user": {
+    "zh": "用户可写 EEPROM，{size} 字节",
+    "en": "User writable EEPROM, {size} bytes"
+  },
+  "home.figure.page.00.vendor": {
+    "zh": "厂商控制",
+    "en": "Vendor control"
+  },
+  "home.figure.page.02": {
+    "zh": "页 02h",
+    "en": "Page 02h"
+  },
+  "home.figure.page.02.body": {
+    "zh": "字节 131 是接收判决阈值",
+    "en": "Byte 131 is the Rx decision threshold"
+  },
+  "home.figure.page.reserved": {
+    "zh": "页 03h-7Fh",
+    "en": "Pages 03h-7Fh"
+  },
+  "home.figure.page.reserved.body": {
+    "zh": "保留",
+    "en": "Reserved"
+  },
+  "home.figure.page.vendor": {
+    "zh": "页 80h-FFh",
+    "en": "Pages 80h-FFh"
+  },
+  "home.figure.page.vendor.body": {
+    "zh": "厂商特定",
+    "en": "Vendor specific"
+  },
+  "home.figure.title": {
+    "zh": "图 4-1：双线地址与页选择",
+    "en": "Figure 4-1: the two addresses and the page select"
   },
   "home.h1": {
     "zh": "三分钟看懂 SFF-8472",
